@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title id="htmlTitle">Igreja CRM | Gestão da Igreja</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='115' fill='%230d1117' stroke='%237c3aed' stroke-width='28'/><text x='50%' y='53%' font-size='190' font-weight='900' fill='%23ffffff' text-anchor='middle' dominant-baseline='central' font-family='sans-serif'>✝</text></svg>">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Igreja CRM">
+<meta name="application-name" content="Igreja CRM">
+<meta name="msapplication-TileColor" content="#0d1117">
+<link rel="manifest" href="manifest.json">
+
+<style>
+:root {
+  --red: #7c3aed;
+  --dark: #0d1117;
+  --sidebar: #161b22;
+  --muted: #64748b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --line: #e2e8f0;
+  --green: #16a34a;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --gray: #64748b;
+  --gold: #d97706;
+  --orange: #ea580c;
+  --yellow: #ca8a04;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: #0f172a; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; border: 0; }
+.app { display: flex; min-height: 100vh; }
+
+.sidebar { width: 260px; background: var(--sidebar); color: white; padding: 20px 14px; position: fixed; inset: 0 auto 0 0; overflow-y: auto; display: flex; flex-direction: column; z-index: 30; border-right: 1px solid #30363d; }
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 0 6px; }
+.brand-badge { width: 46px; height: 46px; background: #0d1117; border: 2px solid var(--red); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; line-height: 1; overflow: hidden; flex-shrink: 0; }
+.brand-badge .t1 { color: #fff; font-size: 20px; }
+.brand-badge .t2 { color: var(--red); font-size: 9px; }
+.brand-info h2 { font-size: 15px; margin: 0; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-info span { font-size: 11px; color: var(--muted); }
+
+.user-pill { background: #0d1117; border: 1px solid #30363d; padding: 9px 10px; border-radius: 8px; margin-bottom: 14px; font-size: 11.5px; display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--red); background: #1e293b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; color: #fff; }
+
+.nav { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.nav button { background: transparent; color: #c9d1d9; text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.15s; }
+.nav button.active, .nav button:hover { background: var(--red); color: #fff; }
+
+.sidebar-footer { border-top: 1px solid #30363d; padding-top: 14px; margin-top: 10px; }
+.goal { padding: 10px 12px; border: 1px solid #30363d; border-radius: 10px; background: #0d1117; margin-bottom: 12px; }
+.goal small { color: #8b949e; font-weight: 600; font-size: 11px; }
+.goal b { font-size: 18px; display: block; margin: 2px 0; }
+
+.main { margin-left: 260px; width: calc(100% - 260px); padding: 24px; min-height: 100vh; }
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.page { display: none; }
+.page.active { display: block; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi, .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
+.kpi small { color: var(--muted); font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.kpi strong { display: block; font-size: 26px; margin-top: 4px; font-weight: 800; }
+
+.grid2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+
+.btn { padding: 9px 13px; border-radius: 8px; background: #e2e8f0; font-weight: 700; font-size: 13px; transition: 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn.primary { background: var(--red); color: white; }
+.btn.green { background: var(--green); color: white; }
+.btn.danger { background: #fee2e2; color: #b91c1c; }
+.btn.purple { background: #ede9fe; color: var(--purple); }
+.btn.blue { background: var(--blue); color: white; }
+.btn.gold { background: #fef3c7; color: #b45309; }
+.btn.gray { background: #f1f5f9; color: #475569; }
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.between { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); font-size: 13px; }
+th { color: var(--muted); font-weight: 700; }
+
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; margin-top: 4px; }
+.field { margin-bottom: 12px; }
+.field label { font-size: 12px; font-weight: 700; color: #334155; }
+
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+.modal.show { display: flex; }
+.modalbox { background: white; border-radius: 14px; max-width: 850px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 22px; }
+
+.badge { display: inline-block; padding: 4px 8px; border-radius: 99px; font-size: 11px; font-weight: 800; }
+.b-red { background: #fee2e2; color: #b91c1c; }
+.b-green { background: #dcfce7; color: #166534; }
+.b-orange { background: #ffedd5; color: #9a3412; }
+.b-yellow { background: #fef9c3; color: #854d0e; }
+.b-blue { background: #dbeafe; color: #1d4ed8; }
+.b-purple { background: #ede9fe; color: #6d28d9; }
+.b-cyan { background: #cffafe; color: #0e7490; }
+.b-gray { background: #f1f5f9; color: #475569; }
+.b-gold { background: #fef3c7; color: #b45309; }
+
+.tab-pills { display: flex; gap: 8px; border-bottom: 2px solid var(--line); padding-bottom: 8px; margin-bottom: 16px; overflow-x: auto; }
+.tab-pill { background: #f1f5f9; color: #475569; border-radius: 8px; padding: 8px 14px; font-weight: 700; font-size: 13px; border: 0; }
+.tab-pill.active { background: var(--red); color: white; }
+.subpage { display: none; }
+.subpage.active { display: block; }
+
+.notif-btn { position: relative; background: #f1f5f9; border-radius: 10px; padding: 8px 12px; font-size: 16px; display: flex; align-items: center; cursor: pointer; }
+.notif-badge { position: absolute; top: -4px; right: -4px; background: var(--red); color: #fff; border-radius: 99px; font-size: 10px; font-weight: 800; padding: 2px 6px; }
+
+.cloud-status { font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #dcfce7; color: #166534; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+
+.auth-screen { position: fixed; inset: 0; background: #0d1117; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.auth-box { background: #161b22; border: 1px solid #30363d; border-radius: 16px; max-width: 400px; width: 100%; padding: 28px; color: #fff; }
+.mobile-nav { display: none; position: fixed; bottom: 0; inset-inline: 0; background: #0d1117; padding: 8px 4px; z-index: 40; border-top: 1px solid #30363d; justify-content: space-around; overflow-x: auto; gap: 2px; }
+.mobile-nav button { background: transparent; color: #8b949e; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px; flex-shrink: 0; min-width: 46px; }
+.mobile-nav button.active { color: var(--red); }
+
+.pill-status { display:inline-block;padding:3px 9px;border-radius:99px;font-size:10.5px;font-weight:800; }
+.st-ativo { background:#dcfce7;color:#166534; }
+.st-afastado { background:#fef9c3;color:#854d0e; }
+.st-transferido { background:#dbeafe;color:#1d4ed8; }
+.st-desligado { background:#f1f5f9;color:#64748b; }
+
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: #f1f5f9; padding: 10px 14px; border-radius: 8px; flex-wrap: wrap; gap: 8px; }
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.day { min-height: 95px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 6px; font-size: 12px; background: #fff; position: relative; cursor: pointer; }
+.day:hover { background: #faf5ff; }
+.day:nth-child(7n) { border-right: 0; }
+.dow { background: #f1f5f9; min-height: auto; font-weight: 800; color: var(--muted); text-align: center; padding: 8px 0; cursor: default; }
+.dow:hover { background: #f1f5f9; }
+.day.current-today { background: #f5f3ff; }
+.day.current-today b { color: var(--red); background: #ede9fe; padding: 2px 6px; border-radius: 4px; }
+.event-item { font-size: 11px; margin-top: 4px; padding: 5px 7px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.15s; line-height: 1.3; background: #ede9fe; color: #6d28d9; }
+.event-item:hover { background: #ddd6fe; }
+.event-item.culto { background: #dbeafe; color: #1d4ed8; }
+.event-item.culto:hover { background: #bfdbfe; }
+.event-item.campanha { background: #fef3c7; color: #92400e; }
+.event-item.campanha:hover { background: #fde68a; }
+
+@media(max-width:900px){
+  .sidebar { display: none; }
+  .main { margin-left: 0; width: 100%; padding: 14px; padding-bottom: 80px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .mobile-nav { display: flex; }
+  .day { min-height: 66px; font-size: 10.5px; padding: 4px; }
+}
+</style>
+</head>
+<body>
+
+<script>
+/* Trava de domínio — mesmo mecanismo já usado no CRM de consórcio. Ver ali
+   para a explicação completa do que isto faz e não faz. */
+const DOMINIO_AUTORIZADO = ''; // ex: 'sua-igreja.github.io'
+document.addEventListener('DOMContentLoaded', function verificarDominio(){
+  if (!DOMINIO_AUTORIZADO) return;
+  if (location.protocol === 'file:') return;
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return;
+  if (location.hostname !== DOMINIO_AUTORIZADO) {
+    document.documentElement.innerHTML = `
+      <head><meta charset="UTF-8"><title>Acesso não autorizado</title></head>
+      <body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d1117;color:#fff;font-family:sans-serif;text-align:center;padding:24px">
+        <div>
+          <div style="font-size:48px;margin-bottom:12px">🔒</div>
+          <h1 style="margin:0 0 8px">Cópia não autorizada</h1>
+          <p style="color:#8b949e;max-width:420px;margin:0 auto">Este sistema está licenciado para uso apenas no endereço original. Se você recebeu este arquivo de forma diferente da combinada, entre em contato com quem forneceu a licença.</p>
+        </div>
+      </body>`;
+    throw new Error('Domínio não autorizado — execução interrompida.');
+  }
+});
+</script>
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="brand-badge" id="authLogo" style="margin:0 auto 12px"><span class="t1" id="authLogoText1">✝</span></div>
+      <h2 style="margin:0" id="authTitle">Acesso Restrito</h2>
+      <span style="font-size:12px;color:#8b949e">Sistema de Gestão da Igreja — Modo Local</span>
+    </div>
+    <div class="field"><label style="color:#c9d1d9">Nome de Usuário ou E-mail</label><input type="text" id="authEmail" placeholder="igreja@crm"></div>
+    <div class="field"><label style="color:#c9d1d9">Senha</label><input type="password" id="authPass" placeholder="••••••••" onkeydown="if(event.key==='Enter') handleAuth()"></div>
+    <button class="btn primary" id="authBtn" style="width:100%;justify-content:center;margin-top:14px" onclick="handleAuth()">🔒 Entrar</button>
+  </div>
+</div>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-badge" id="appLogoBadge"><span class="t1" id="logoText1">✝</span></div>
+    <div class="brand-info"><h2 id="appBrandTitle">Minha Igreja</h2><span id="appBrandSub">Gestão Eclesiástica</span></div>
+  </div>
+
+  <div class="user-pill" onclick="abrirModalMeuPerfil()" style="cursor:pointer" title="Clique para editar seus dados">
+    <div class="user-avatar" id="sidebarAvatar">P</div>
+    <div style="flex:1;overflow:hidden">
+      <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="currentUserName">Carregando...</div>
+      <div style="font-size:10px;color:#94a3b8" id="currentUserRole">Cargo: -</div>
+    </div>
+    <a href="javascript:void(0)" onclick="event.stopPropagation();logout()" style="color:var(--red);font-size:11px;text-decoration:none;font-weight:700">Sair</a>
+  </div>
+
+  <button id="sidebarPwaInstallBtn" class="btn blue" style="display:none;width:100%;margin-bottom:10px;font-size:11.5px;justify-content:center;gap:6px" onclick="triggerPwaInstall()">💻 Instalar App</button>
+
+  <div class="nav">
+    <button class="active" onclick="show('dashboard',this)">🏠 Dashboard</button>
+    <button onclick="show('membros',this)">👥 Membros e Colaboradores</button>
+    <button onclick="show('financeiro',this)">💰 Financeiro</button>
+    <button onclick="show('agenda',this)">📅 Agenda</button>
+    <button onclick="show('biblia',this)">📖 Bíblia</button>
+    <button onclick="show('esbocos',this)">📝 Esboços e Pregações</button>
+    <button onclick="show('informacoes',this)">📢 Informações</button>
+    <button onclick="show('aniversarios',this)">🎂 Aniversariantes</button>
+    <button onclick="show('usuarios',this)">🛡️ Usuários & Permissões</button>
+    <button onclick="show('configuracoes',this)">⚙️ Configurações</button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="goal"><small>Membros Ativos</small><b id="goalText">0</b></div>
+    <div class="row">
+      <button class="btn" style="flex:1;font-size:11px" onclick="exportData()">💾 Backup</button>
+      <button class="btn" style="flex:1;font-size:11px" onclick="document.getElementById('importFile').click()">📥 Importar</button>
+      <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:10px;color:#64748b" id="appVersionTag">Versão 2.2.0</div>
+  </div>
+</aside>
+
+<main class="main">
+<div class="top">
+  <div>
+    <h1 id="pageTitle" style="margin:0;font-size:22px">Dashboard</h1>
+    <span style="font-size:12px;color:var(--muted)">Gestão da Igreja — Membros e Colaboradores, Financeiro e Agenda</span>
+    <span class="cloud-status" id="cloudStatusBadge" style="margin-left:8px">💾 Armazenamento Local Ativo</span>
+  </div>
+  <div class="row">
+    <button id="topPwaInstallBtn" class="btn blue" style="display:none;font-size:11.5px" onclick="triggerPwaInstall()">💻 Instalar App</button>
+    <div class="notif-btn" onclick="openNotificationsModal()">🔔 <span class="notif-badge" id="notifBadgeCount">0</span></div>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD ===================== -->
+<section id="dashboard" class="page active">
+  <div class="card" style="margin-bottom:16px">
+    <div class="row">
+      <label style="font-size:12px;font-weight:700">Ver Dashboard por:</label>
+      <select id="dashboardPeriodoSel" onchange="renderDashboard()" style="max-width:180px">
+        <option value="semana">Esta Semana</option>
+        <option value="mes" selected>Este Mês</option>
+        <option value="ano">Este Ano</option>
+      </select>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi">👥 <small>Membros Ativos</small><strong id="kMembrosAtivos">0</strong></div>
+    <div class="kpi">💰 <small id="kArrecadacaoLabel">Arrecadação (Este Mês)</small><strong id="kArrecadacaoMes" style="color:var(--green)">R$ 0</strong></div>
+    <div class="kpi">📉 <small id="kDespesasLabel">Despesas (Este Mês)</small><strong id="kDespesasMes" style="color:#b91c1c">R$ 0</strong></div>
+    <div class="kpi">⚖️ <small id="kSaldoLabel">Saldo (Este Mês)</small><strong id="kSaldoMes">R$ 0</strong></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Membros e Colaboradores por Status</h2>
+    <div id="dashStatusBreakdown"></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin-top:0">🎂 Aniversariantes dos Próximos 7 Dias</h2>
+    <div id="dashAniversariantesProximos"></div>
+  </div>
+</section>
+
+<!-- ===================== MEMBROS E COLABORADORES ===================== -->
+<section id="membros" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">👥 Membros e Colaboradores</h2><small class="muted">Cadastro completo da igreja</small></div>
+      <div class="row">
+        <button class="btn gray" onclick="exportarMembrosExcel()">📊 Exportar para Excel</button>
+        <button class="btn primary" onclick="abrirModalMembro()">+ Novo Membro/Colaborador</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="row">
+      <input type="text" id="membroBusca" placeholder="Buscar por nome ou categoria..." style="max-width:260px" oninput="renderMembros()">
+      <select id="membroFiltroCategoria" onchange="renderMembros()" style="max-width:200px"><option value="all">Todas as Categorias</option></select>
+      <select id="membroFiltroStatus" onchange="renderMembros()" style="max-width:170px">
+        <option value="all">Todos os Status</option>
+        <option value="Ativo">Ativo</option>
+        <option value="Afastado">Afastado</option>
+        <option value="Transferido">Transferido</option>
+        <option value="Desligado">Desligado</option>
+      </select>
+    </div>
+  </div>
+  <div class="card"><div style="overflow-x:auto"><table id="tabelaMembros"></table></div></div>
+</section>
+
+<!-- ===================== FINANCEIRO ===================== -->
+<section id="financeiro" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">💰 Financeiro</h2><small class="muted">Dízimos, ofertas, campanhas e despesas — organizados por culto</small></div>
+      <div class="row">
+        <button class="btn green" onclick="abrirModalFinanceiro('entrada')">+ Lançar Entrada</button>
+        <button class="btn danger" onclick="abrirModalFinanceiro('saida')">+ Lançar Saída</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="row">
+      <label style="font-size:12px;font-weight:700">Resumo do topo — ver por:</label>
+      <select id="finPeriodoTopoSel" onchange="renderFinanceiro()" style="max-width:180px">
+        <option value="dia">Hoje</option>
+        <option value="semana">Esta Semana</option>
+        <option value="mes" selected>Este Mês</option>
+        <option value="ano">Este Ano</option>
+      </select>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><small id="finEntradasLabel">Entradas (Este Mês)</small><strong id="finEntradasMes" style="color:var(--green)">R$ 0</strong></div>
+    <div class="kpi"><small id="finSaidasLabel">Saídas (Este Mês)</small><strong id="finSaidasMes" style="color:#b91c1c">R$ 0</strong></div>
+    <div class="kpi"><small id="finSaldoLabel">Saldo (Este Mês)</small><strong id="finSaldoMes">R$ 0</strong></div>
+    <div class="kpi"><small>Saldo Total Acumulado</small><strong id="finSaldoTotal">R$ 0</strong></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0;font-size:16px">⛪ Cultos Cadastrados</h2><small class="muted">Cadastre os cultos fixos da igreja para que as entradas somem automaticamente por culto</small></div>
+      <button class="btn primary" onclick="abrirModalCulto()">+ Novo Culto</button>
+    </div>
+    <div id="listaCultos" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="margin-top:0;font-size:16px">📊 Resumo de Arrecadação por Culto</h2>
+    <div style="overflow-x:auto" id="resumoCultos"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="row">
+      <label style="font-size:12px;font-weight:700">Mês:</label>
+      <input type="month" id="finFiltroMes" onchange="renderFinanceiro()" style="max-width:160px">
+      <button class="btn" onclick="document.getElementById('finFiltroMes').value='';renderFinanceiro()">Ver Tudo</button>
+      <label style="font-size:12px;font-weight:700">Categoria:</label>
+      <select id="finFiltroCategoria" onchange="renderFinanceiro()" style="max-width:200px"><option value="all">Todas</option></select>
+      <label style="font-size:12px;font-weight:700">Culto:</label>
+      <select id="finFiltroCulto" onchange="renderFinanceiro()" style="max-width:200px"><option value="all">Todos</option></select>
+    </div>
+  </div>
+  <div class="card"><div style="overflow-x:auto"><table id="tabelaFinanceiro"></table></div></div>
+</section>
+
+<!-- ===================== AGENDA ===================== -->
+<section id="agenda" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">📅 Agenda</h2><small class="muted">Cultos, eventos e lembretes — clique em um dia do calendário para agendar</small></div>
+      <button class="btn primary" onclick="abrirModalEvento()">+ Novo Evento</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="calendar-header">
+      <div class="row">
+        <button class="btn" onclick="prevMonth()">◀</button>
+        <button class="btn" onclick="goToToday()">Hoje</button>
+        <button class="btn" onclick="nextMonth()">▶</button>
+      </div>
+      <h3 id="currentMonthYear" style="margin:0;font-size:16px;color:#1e293b"></h3>
+    </div>
+    <div class="calendar" id="calendar"></div>
+  </div>
+</section>
+
+<!-- ===================== BÍBLIA ===================== -->
+<section id="biblia" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="margin:0">📖 Bíblia</h2>
+    <small class="muted">Escolha a versão, o livro e o capítulo — o leitor oficial e gratuito abre em uma nova aba (é necessário estar com internet nesse momento).</small>
+  </div>
+  <div class="card">
+    <div class="tab-pills">
+      <button class="tab-pill biblia-tab-pill active" data-v="ARC" onclick="selecionarVersaoBiblia('ARC')">ARC — Almeida Revista e Corrigida</button>
+      <button class="tab-pill biblia-tab-pill" data-v="NTLH" onclick="selecionarVersaoBiblia('NTLH')">NTLH — Linguagem de Hoje</button>
+      <button class="tab-pill biblia-tab-pill" data-v="NVT" onclick="selecionarVersaoBiblia('NVT')">NVT — Nova Versão Transformadora</button>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Livro</label><select id="bibliaLivro"></select></div>
+      <div class="field"><label>Capítulo</label><input type="number" id="bibliaCapitulo" min="1" value="1"></div>
+    </div>
+    <button class="btn primary" onclick="abrirCapituloBiblia()">📖 Abrir Capítulo</button>
+  </div>
+</section>
+
+<!-- ===================== ESBOÇOS E PREGAÇÕES ===================== -->
+<section id="esbocos" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">📝 Esboços e Pregações</h2><small class="muted">Registre temas e mensagens — ao inserir um versículo, o texto dele é lembrado automaticamente nas próximas vezes</small></div>
+      <button class="btn primary" onclick="abrirModalSermao()">+ Novo Esboço</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <input type="text" id="sermaoBusca" placeholder="Buscar por tema ou pregador..." style="max-width:300px" oninput="renderSermoes()">
+  </div>
+  <div id="listaSermoes"></div>
+</section>
+
+<!-- ===================== INFORMAÇÕES ===================== -->
+<section id="informacoes" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">📢 Horários de Culto</h2><small class="muted">Programação fixa semanal da igreja</small></div>
+      <button class="btn primary" onclick="abrirModalHorarioCulto()">+ Novo Horário</button>
+    </div>
+    <div id="listaHorariosCulto" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">📣 Campanhas</h2><small class="muted">Campanha atual e campanhas futuras planejadas</small></div>
+      <button class="btn primary" onclick="abrirModalCampanha()">+ Nova Campanha</button>
+    </div>
+    <div id="listaCampanhas" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="between" style="flex-wrap:wrap;gap:12px">
+      <div><h2 style="margin:0">🔗 Links Úteis</h2><small class="muted">Transmissão ao vivo, redes sociais, formulários, PIX de doação, etc.</small></div>
+      <button class="btn primary" onclick="abrirModalLinkUtil()">+ Novo Link</button>
+    </div>
+    <div id="listaLinksUteis" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<!-- ===================== ANIVERSARIANTES ===================== -->
+<section id="aniversarios" class="page">
+  <div class="card" style="margin-bottom:16px"><h2 style="margin:0">🎂 Aniversariantes</h2><small class="muted">Membros e colaboradores por mês de nascimento</small></div>
+  <div class="card">
+    <select id="aniversarioMesFiltro" onchange="renderAniversarios()" style="max-width:200px"></select>
+    <div id="listaAniversariantes" style="margin-top:14px"></div>
+  </div>
+</section>
+
+<!-- ===================== USUÁRIOS ===================== -->
+<section id="usuarios" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <div class="between"><h2 style="margin:0">🛡️ Usuários & Permissões</h2><button class="btn primary" onclick="abrirModalUsuario()">+ Novo Usuário</button></div>
+  </div>
+  <div class="card"><div style="overflow-x:auto"><table id="tabelaUsuarios"></table></div></div>
+</section>
+
+<!-- ===================== CONFIGURAÇÕES ===================== -->
+<section id="configuracoes" class="page">
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="margin-top:0">⚙️ Identidade Visual</h2>
+    <div class="field"><label>Nome da Igreja</label><input type="text" id="cfgNomeIgreja"></div>
+    <div class="field"><label>Subtítulo</label><input type="text" id="cfgSubtitulo"></div>
+    <button class="btn primary" onclick="salvarBranding()">Salvar Identidade Visual</button>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">🗑️ Zona de Risco</h2>
+    <p class="muted" style="font-size:12px">Apaga todos os cadastros deste sistema neste dispositivo. Faça um backup antes.</p>
+    <button class="btn danger" onclick="resetarBancoDeDadosLocal()">Zerar Sistema Local</button>
+  </div>
+</section>
+
+</main>
+</div>
+
+<nav class="mobile-nav">
+  <button onclick="show('dashboard',this)">🏠<span>Início</span></button>
+  <button onclick="show('membros',this)">👥<span>Membros</span></button>
+  <button onclick="show('financeiro',this)">💰<span>Financ.</span></button>
+  <button onclick="show('agenda',this)">📅<span>Agenda</span></button>
+  <button onclick="abrirMenuMaisMobile()">☰<span>Mais</span></button>
+</nav>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalContent"></div></div>
+
+<script>
+// === REGISTRO DE SERVICE WORKER PARA INSTALAÇÃO PWA E USO OFFLINE ===
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(console.warn); }
+
+let deferredPwaPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPwaPrompt = e;
+  const topBtn = document.getElementById('topPwaInstallBtn');
+  const sideBtn = document.getElementById('sidebarPwaInstallBtn');
+  if (topBtn) topBtn.style.display = 'inline-flex';
+  if (sideBtn) sideBtn.style.display = 'inline-flex';
+});
+function triggerPwaInstall() {
+  if (deferredPwaPrompt) {
+    deferredPwaPrompt.prompt();
+    deferredPwaPrompt.userChoice.then(() => {
+      deferredPwaPrompt = null;
+      const topBtn = document.getElementById('topPwaInstallBtn');
+      const sideBtn = document.getElementById('sidebarPwaInstallBtn');
+      if (topBtn) topBtn.style.display = 'none';
+      if (sideBtn) sideBtn.style.display = 'none';
+    });
+  } else {
+    alert('Para instalar:\n1. Clique nos 3 pontinhos do navegador\n2. Escolha "Instalar app" ou "Criar atalho" marcando "Abrir como janela".');
+  }
+}
+</script>
+
+<script>
+const APP_VERSION = '2.4.0';
+const SENHA_MEUS_DADOS = "admin123"; // Senha fixa (separada da senha de login) usada só para o reset do sistema
+
+// Prefixo do nome do arquivo de backup baixado (Configurações -> Backup).
+// Em cada cópia personalizada de igreja cliente, troque este valor para que
+// o arquivo baixado já saia identificado, sem confundir com o de outra igreja.
+const BACKUP_FILE_PREFIX = 'igreja-chms';
+
+const urlParams = new URLSearchParams(window.location.search);
+const EQUIPE_ID = urlParams.get('igreja') || 'igreja_principal';
+const KEY_DB = `igreja_crm_db_${EQUIPE_ID}`;
+const KEY_USERS = `igreja_crm_users_${EQUIPE_ID}`;
+const KEY_BRAND = `igreja_crm_brand_${EQUIPE_ID}`;
+const KEY_NOTIFS = `igreja_crm_notifs_${EQUIPE_ID}`;
+
+let db = JSON.parse(localStorage.getItem(KEY_DB)) || {};
+if (!db.membros) db.membros = [];
+if (!db.financeiro) db.financeiro = [];
+if (!db.cultos) db.cultos = [];
+if (!db.eventos) db.eventos = [];
+if (!db.horariosCulto) db.horariosCulto = [];
+if (!db.linksUteis) db.linksUteis = [];
+if (!db.campanhas) db.campanhas = [];
+if (!db.sermoes) db.sermoes = [];
+if (!db.versiculos) db.versiculos = {};
+
+let brand = JSON.parse(localStorage.getItem(KEY_BRAND)) || { nome: 'Minha Igreja', subtitulo: 'Gestão Eclesiástica' };
+let notifications = JSON.parse(localStorage.getItem(KEY_NOTIFS)) || [];
+
+let usersList = JSON.parse(localStorage.getItem(KEY_USERS)) || [
+  { id: 'u_admin', nome: 'Administrador', email: 'igreja@crm', pass: '123456', cargo: 'Pastor Titular', isAdmin: true, canViewFinanceiro: true, canManageMembros: true, canManageUsuarios: true, avatar: '' }
+];
+
+let currentUser = JSON.parse(localStorage.getItem(`igreja_crm_active_user_${EQUIPE_ID}`)) || null;
+
+function esc(s=''){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function fmtMoeda(v){ return Number(v||0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+function fmtData(d){ if(!d) return '-'; const dt = new Date(d + 'T12:00:00'); return isNaN(dt.getTime()) ? '-' : dt.toLocaleDateString('pt-BR'); }
+function uid(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+function save(){
+  localStorage.setItem(KEY_DB, JSON.stringify(db));
+  localStorage.setItem(KEY_USERS, JSON.stringify(usersList));
+  localStorage.setItem(KEY_BRAND, JSON.stringify(brand));
+  localStorage.setItem(KEY_NOTIFS, JSON.stringify(notifications));
+  renderAll();
+  const statusEl = document.getElementById('cloudStatusBadge');
+  if (statusEl) statusEl.textContent = '💾 Dados Salvos Localmente';
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function openModalHtml(html){ document.getElementById('modalContent').innerHTML = html; document.getElementById('modal').classList.add('show'); }
+
+// ===================== AUTENTICAÇÃO =====================
+function handleAuth(){
+  const emailEl = document.getElementById('authEmail');
+  const passEl = document.getElementById('authPass');
+  const emailRaw = (emailEl ? emailEl.value : '').trim();
+  const pass = (passEl ? passEl.value : '').trim();
+  if(!emailRaw || !pass) return alert('Informe usuário e senha.');
+
+  const found = usersList.find(u => u.email.toLowerCase() === emailRaw.toLowerCase());
+  if(!found) return alert('Acesso negado: usuário não cadastrado.');
+  if(found.pass !== pass) return alert('Senha incorreta.');
+
+  currentUser = found;
+  localStorage.setItem(`igreja_crm_active_user_${EQUIPE_ID}`, JSON.stringify(currentUser));
+  document.getElementById('authScreen').style.display = 'none';
+  initApp();
+}
+function logout(){
+  localStorage.removeItem(`igreja_crm_active_user_${EQUIPE_ID}`);
+  currentUser = null;
+  initApp();
+}
+function abrirModalMeuPerfil(){
+  if(!currentUser) return;
+  openModalHtml(`
+    <div class="between"><h2>✏️ Meus Dados</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Nome</label><input type="text" id="meuNome" value="${esc(currentUser.nome)}"></div>
+    <div class="field"><label>Cargo</label><input type="text" id="meuCargo" placeholder="Ex: Pastor, Secretária, Tesoureiro..." value="${esc(currentUser.cargo||'')}"></div>
+    <div class="field"><label>E-mail / Usuário de Login</label><input type="text" id="meuEmail" value="${esc(currentUser.email)}"></div>
+    <div class="field"><label>Nova Senha</label><input type="password" id="meuSenha" placeholder="Deixe em branco para manter a senha atual"></div>
+    <small class="muted">Essas informações são só suas — como administrador(a), você também pode editar os dados de outras pessoas em "Usuários & Permissões".</small>
+    <div class="row" style="justify-content:flex-end;margin-top:14px">
+      <button class="btn primary" onclick="salvarMeuPerfil()">Salvar</button>
+    </div>`);
+}
+function salvarMeuPerfil(){
+  const nome = document.getElementById('meuNome').value.trim();
+  const email = document.getElementById('meuEmail').value.trim();
+  if(!nome) return alert('Informe seu nome.');
+  if(!email) return alert('Informe seu e-mail/usuário de login.');
+  const senha = document.getElementById('meuSenha').value;
+  const emailEmUsoPorOutro = usersList.some(u => u.id !== currentUser.id && u.email.toLowerCase() === email.toLowerCase());
+  if(emailEmUsoPorOutro) return alert('Esse e-mail/usuário já está em uso por outra pessoa.');
+
+  currentUser.nome = nome;
+  currentUser.cargo = document.getElementById('meuCargo').value.trim();
+  currentUser.email = email;
+  if(senha.trim()) currentUser.pass = senha.trim();
+
+  const registro = usersList.find(u => u.id === currentUser.id);
+  if(registro) Object.assign(registro, currentUser);
+
+  localStorage.setItem(`igreja_crm_active_user_${EQUIPE_ID}`, JSON.stringify(currentUser));
+  document.getElementById('currentUserName').textContent = currentUser.nome;
+  document.getElementById('currentUserRole').textContent = 'Cargo: ' + (currentUser.cargo || '-');
+  document.getElementById('sidebarAvatar').textContent = (currentUser.nome || '?').charAt(0).toUpperCase();
+  save();
+  closeModal();
+}
+function initApp(){
+  if(!currentUser){
+    document.getElementById('authScreen').style.display = 'flex';
+    return;
+  }
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('currentUserName').textContent = currentUser.nome;
+  document.getElementById('currentUserRole').textContent = 'Cargo: ' + (currentUser.cargo || '-');
+  document.getElementById('sidebarAvatar').textContent = (currentUser.nome || '?').charAt(0).toUpperCase();
+  aplicarBranding();
+  renderAll();
+  verificarNotificacoesDoDia();
+}
+function verificarNotificacoesDoDia(){
+  const hoje = new Date();
+  const hojeKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+  const KEY_LASTCHECK = `igreja_crm_lastnotifcheck_${EQUIPE_ID}`;
+  if(localStorage.getItem(KEY_LASTCHECK) === hojeKey) return;
+  localStorage.setItem(KEY_LASTCHECK, hojeKey);
+
+  db.membros.forEach(m => {
+    if(!m.nascimento) return;
+    const nasc = new Date(m.nascimento + 'T12:00:00');
+    if(nasc.getMonth() === hoje.getMonth() && nasc.getDate() === hoje.getDate()){
+      addNotification('aniversario', 'Aniversário Hoje! 🎂', `🎂 ${m.nome} faz aniversário hoje!`);
+    }
+  });
+
+  (db.campanhas||[]).forEach(c => {
+    if(c.dataInicio === hojeKey){
+      addNotification('campanha', 'Campanha Começando Hoje', `📣 A campanha "${c.nome}" começa hoje!`);
+    }
+  });
+}
+function aplicarBranding(){
+  document.getElementById('appBrandTitle').textContent = brand.nome;
+  document.getElementById('appBrandSub').textContent = brand.subtitulo;
+  document.getElementById('htmlTitle').textContent = brand.nome + ' | Gestão da Igreja';
+}
+function salvarBranding(){
+  brand.nome = document.getElementById('cfgNomeIgreja').value || 'Minha Igreja';
+  brand.subtitulo = document.getElementById('cfgSubtitulo').value || 'Gestão Eclesiástica';
+  save();
+  aplicarBranding();
+  alert('Identidade visual salva!');
+}
+
+// ===================== NOTIFICAÇÕES =====================
+function addNotification(type, title, text){
+  notifications.unshift({ id: uid('n'), type, title, text, time: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), date: new Date().toLocaleDateString('pt-BR'), read: false });
+  save();
+  updateNotifBadge();
+  tocarSomNotificacao();
+}
+function updateNotifBadge(){
+  const unread = notifications.filter(n => !n.read).length;
+  const el = document.getElementById('notifBadgeCount');
+  if(el){ el.textContent = unread; el.style.display = unread > 0 ? 'inline-block' : 'none'; }
+}
+function tocarSomNotificacao(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.32);
+    osc.onended = () => ctx.close();
+  }catch(e){}
+}
+function openNotificationsModal(){
+  notifications.forEach(n => n.read = true); save(); updateNotifBadge();
+  const listHtml = notifications.length ? notifications.map(n => `
+    <div style="padding:10px;border-bottom:1px solid var(--line);font-size:13px">
+      <b>${esc(n.title)}</b><br><span class="muted">${esc(n.text)}</span><br>
+      <small class="muted">${n.date} ${n.time}</small>
+    </div>`).join('') : '<p class="muted">Nenhuma notificação.</p>';
+  openModalHtml(`<div class="between"><h2>🔔 Notificações</h2><button class="btn" onclick="closeModal()">✕</button></div>${listHtml}`);
+}
+
+// ===================== BACKUP / IMPORTAR =====================
+function exportData(){
+  const blob = new Blob([JSON.stringify({db, usersList, brand, notifications}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup_${BACKUP_FILE_PREFIX}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  localStorage.setItem('ultimo_backup_igreja', Date.now().toString());
+}
+function importData(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try{
+      const data = JSON.parse(evt.target.result);
+      if(data.db) db = data.db; else db = data;
+      if(!db.membros) db.membros = [];
+      if(!db.financeiro) db.financeiro = [];
+      if(!db.cultos) db.cultos = [];
+      if(!db.eventos) db.eventos = [];
+      if(!db.horariosCulto) db.horariosCulto = [];
+      if(!db.linksUteis) db.linksUteis = [];
+      if(!db.campanhas) db.campanhas = [];
+      if(!db.sermoes) db.sermoes = [];
+      if(!db.versiculos) db.versiculos = {};
+      if(data.usersList) usersList = data.usersList;
+      if(data.brand) brand = data.brand;
+      if(data.notifications) notifications = data.notifications;
+      if(currentUser && Array.isArray(usersList)){
+        const atualizado = usersList.find(u => u.id === currentUser.id || (u.email && currentUser.email && u.email.toLowerCase() === currentUser.email.toLowerCase()));
+        if(atualizado){ currentUser = atualizado; localStorage.setItem(`igreja_crm_active_user_${EQUIPE_ID}`, JSON.stringify(currentUser)); }
+      }
+      save();
+      aplicarBranding();
+      alert('Backup importado com sucesso!');
+    }catch(err){ alert('Arquivo inválido: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+function resetarBancoDeDadosLocal(){
+  const pass = prompt('Área protegida. Digite a senha para resetar o sistema local:');
+  if(pass === null) return;
+  if(pass !== SENHA_MEUS_DADOS){ alert('Senha incorreta! Operação cancelada.'); return; }
+  if(confirm('⚠️ Isso apaga TODOS os cadastros deste sistema neste dispositivo. Deseja continuar?')){
+    if(confirm('Tem certeza absoluta? Faça um backup antes se necessário!')){
+      localStorage.removeItem(KEY_DB); localStorage.removeItem(KEY_USERS);
+      location.reload();
+    }
+  }
+}
+
+// ===================== NAVEGAÇÃO =====================
+const PAGE_TITLES = {
+  dashboard:'Dashboard', membros:'Membros e Colaboradores', financeiro:'Financeiro', agenda:'Agenda',
+  biblia:'Bíblia', esbocos:'Esboços e Pregações', informacoes:'Informações', aniversarios:'Aniversariantes',
+  usuarios:'Usuários & Permissões', configuracoes:'Configurações'
+};
+function show(id, btn){
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  const target = document.getElementById(id);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.nav button, .mobile-nav button').forEach(x => x.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[id] || id;
+  renderAll();
+}
+function abrirMenuMaisMobile(){
+  openModalHtml(`
+    <div class="between"><h2>Mais Opções</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('biblia')">📖 Bíblia</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('esbocos')">📝 Esboços e Pregações</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('informacoes')">📢 Informações</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('aniversarios')">🎂 Aniversariantes</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('usuarios')">🛡️ Usuários</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();show('configuracoes')">⚙️ Configurações</button>
+      <hr style="border:0;border-top:1px solid var(--line);margin:6px 0">
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();exportData()">💾 Backup</button>
+      <button class="btn" style="justify-content:flex-start" onclick="closeModal();document.getElementById('importFile').click()">📥 Importar</button>
+      <button class="btn danger" style="justify-content:flex-start" onclick="closeModal();logout()">🚪 Sair</button>
+    </div>`);
+}
+
+function renderAll(){
+  try{
+    renderDashboard();
+    renderMembros();
+    renderFinanceiro();
+    renderCultos();
+    renderAgenda();
+    renderBiblia();
+    renderSermoes();
+    renderInformacoes();
+    renderAniversarios();
+    renderUsuarios();
+    if(brand){ document.getElementById('cfgNomeIgreja').value = brand.nome; document.getElementById('cfgSubtitulo').value = brand.subtitulo; }
+    updateNotifBadge();
+  }catch(err){ console.error('Erro de renderização:', err); }
+}
+
+// ===================== MEMBROS E COLABORADORES =====================
+const CATEGORIAS_MEMBRO = ['Membro','Obreiro','Levita','Ministro','Pastor','Evangelista','Apóstolo','Diácono','Tia de Escolinha','Jovens'];
+function abrirModalMembro(id){
+  const m = id ? db.membros.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${m?'Editar':'Novo'} Membro/Colaborador</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="grid2">
+      <div>
+        <div class="field"><label>Nome Completo</label><input type="text" id="mNome" value="${m?esc(m.nome):''}"></div>
+        <div class="field"><label>Categoria</label>
+          <select id="mCategoria">${CATEGORIAS_MEMBRO.map(o=>`<option ${m&&m.categoria===o?'selected':''}>${o}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Telefone</label><input type="text" id="mTel" value="${m?esc(m.tel):''}"></div>
+        <div class="field"><label>E-mail</label><input type="text" id="mEmail" value="${m?esc(m.email):''}"></div>
+        <div class="field"><label>Endereço</label><input type="text" id="mEndereco" value="${m?esc(m.endereco):''}"></div>
+        <div class="field"><label>Data de Nascimento</label><input type="date" id="mNascimento" value="${m&&m.nascimento?m.nascimento:''}"></div>
+      </div>
+      <div>
+        <div class="field"><label>Status</label>
+          <select id="mStatus">
+            ${['Ativo','Afastado','Transferido','Desligado'].map(o=>`<option ${m&&m.status===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Batizado?</label>
+          <select id="mBatizado">
+            <option value="Não" ${m&&m.batizado==='Não'?'selected':''}>Não</option>
+            <option value="Sim" ${m&&m.batizado==='Sim'?'selected':''}>Sim</option>
+          </select>
+        </div>
+        <div class="field"><label>Data de Cadastro</label><input type="date" id="mDataCadastro" value="${m&&m.dataCadastro?m.dataCadastro:new Date().toISOString().slice(0,10)}"></div>
+        <div class="field"><label>Estado Civil</label>
+          <select id="mEstadoCivil">
+            ${['Solteiro(a)','Casado(a)','Divorciado(a)','Viúvo(a)'].map(o=>`<option ${m&&m.estadoCivil===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Cargo/Função (opcional)</label><input type="text" id="mCargo" placeholder="Ex: Líder de Louvor..." value="${m?esc(m.cargo||''):''}"></div>
+        <div class="field"><label>Ministérios (separe por vírgula)</label><input type="text" id="mMinisterios" value="${m&&m.ministerios?esc(m.ministerios.join(', ')):''}"></div>
+      </div>
+    </div>
+    <div class="field"><label>Observações</label><textarea id="mObs" rows="2">${m?esc(m.obs||''):''}</textarea></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${m?`<button class="btn danger" onclick="excluirMembro('${m.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarMembro(${m?`'${m.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarMembro(id){
+  const nome = document.getElementById('mNome').value.trim();
+  if(!nome) return alert('Informe o nome do membro/colaborador.');
+  const dados = {
+    nome, categoria: document.getElementById('mCategoria').value, tel: document.getElementById('mTel').value.trim(), email: document.getElementById('mEmail').value.trim(),
+    endereco: document.getElementById('mEndereco').value.trim(), nascimento: document.getElementById('mNascimento').value,
+    estadoCivil: document.getElementById('mEstadoCivil').value, status: document.getElementById('mStatus').value,
+    batizado: document.getElementById('mBatizado').value, dataCadastro: document.getElementById('mDataCadastro').value,
+    cargo: document.getElementById('mCargo').value.trim(),
+    ministerios: document.getElementById('mMinisterios').value.split(',').map(s=>s.trim()).filter(Boolean),
+    obs: document.getElementById('mObs').value.trim()
+  };
+  if(id){
+    const m = db.membros.find(x => x.id === id);
+    Object.assign(m, dados);
+  } else {
+    db.membros.push(Object.assign({ id: uid('mem') }, dados));
+    addNotification('membro', 'Novo Cadastro', `👥 ${nome} foi cadastrado(a) como ${dados.categoria}.`);
+  }
+  save(); closeModal();
+}
+function excluirMembro(id){
+  if(confirm('Excluir este registro? Essa ação não pode ser desfeita.')){
+    db.membros = db.membros.filter(x => x.id !== id);
+    save(); closeModal();
+  }
+}
+function statusPillClass(status){
+  return { 'Ativo':'st-ativo','Afastado':'st-afastado','Transferido':'st-transferido','Desligado':'st-desligado' }[status] || 'b-gray';
+}
+function renderMembros(){
+  const table = document.getElementById('tabelaMembros');
+  if(!table) return;
+  const busca = (document.getElementById('membroBusca')?.value || '').toLowerCase();
+  const filtroCategoria = document.getElementById('membroFiltroCategoria')?.value || 'all';
+  const filtroStatus = document.getElementById('membroFiltroStatus')?.value || 'all';
+
+  const selCat = document.getElementById('membroFiltroCategoria');
+  if(selCat){
+    const atual = selCat.value;
+    selCat.innerHTML = '<option value="all">Todas as Categorias</option>' + CATEGORIAS_MEMBRO.map(c => `<option value="${c}">${c}</option>`).join('');
+    selCat.value = atual;
+  }
+
+  let lista = db.membros.slice();
+  if(busca) lista = lista.filter(m => m.nome.toLowerCase().includes(busca) || (m.categoria||'').toLowerCase().includes(busca));
+  if(filtroCategoria !== 'all') lista = lista.filter(m => m.categoria === filtroCategoria);
+  if(filtroStatus !== 'all') lista = lista.filter(m => m.status === filtroStatus);
+  lista.sort((a,b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+  const header = `<tr><th>Nome</th><th>Categoria</th><th>Contato</th><th>Status</th><th>Batizado</th><th>Cadastro</th><th></th></tr>`;
+  const rows = lista.map(m => {
+    return `<tr>
+      <td><b>${esc(m.nome)}</b>${m.cargo?`<br><small class="muted">${esc(m.cargo)}</small>`:''}</td>
+      <td><span class="badge b-purple">${esc(m.categoria||'Membro')}</span></td>
+      <td>${esc(m.tel||'-')}</td>
+      <td><span class="pill-status ${statusPillClass(m.status)}">${esc(m.status)}</span></td>
+      <td>${m.batizado==='Sim'?'✅ Sim':'— Não'}</td>
+      <td>${fmtData(m.dataCadastro)}</td>
+      <td><button class="btn" style="font-size:11px" onclick="abrirModalMembro('${m.id}')">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+  table.innerHTML = header + (rows || '<tr><td colspan="7" style="text-align:center;padding:20px" class="muted">Nenhum registro encontrado.</td></tr>');
+
+  document.getElementById('goalText').textContent = db.membros.filter(m => m.status === 'Ativo').length;
+}
+function exportarMembrosExcel(){
+  const busca = (document.getElementById('membroBusca')?.value || '').toLowerCase();
+  const filtroCategoria = document.getElementById('membroFiltroCategoria')?.value || 'all';
+  const filtroStatus = document.getElementById('membroFiltroStatus')?.value || 'all';
+  let lista = db.membros.slice();
+  if(busca) lista = lista.filter(m => m.nome.toLowerCase().includes(busca) || (m.categoria||'').toLowerCase().includes(busca));
+  if(filtroCategoria !== 'all') lista = lista.filter(m => m.categoria === filtroCategoria);
+  if(filtroStatus !== 'all') lista = lista.filter(m => m.status === filtroStatus);
+  lista.sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
+
+  let html = '<table border="1"><tr>' +
+    '<th>Nome</th><th>Categoria</th><th>Status</th><th>Telefone</th><th>E-mail</th><th>Batizado</th><th>Data de Cadastro</th><th>Data de Nascimento</th>' +
+    '</tr>';
+  lista.forEach(m => {
+    html += `<tr><td>${esc(m.nome)}</td><td>${esc(m.categoria||'-')}</td><td>${esc(m.status)}</td><td>${esc(m.tel||'-')}</td><td>${esc(m.email||'-')}</td><td>${m.batizado==='Sim'?'Sim':'Não'}</td><td>${fmtData(m.dataCadastro)}</td><td>${fmtData(m.nascimento)}</td></tr>`;
+  });
+  html += '</table>';
+
+  const blob = new Blob(['﻿' + html], {type:'application/vnd.ms-excel'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `membros_colaboradores_${new Date().toISOString().slice(0,10)}.xls`;
+  a.click();
+}
+
+// ===================== FINANCEIRO (POR CULTO) =====================
+const CATEGORIAS_ENTRADA = ['Dízimo','Oferta','Oferta Especial','Campanha','Doação','Outros'];
+const CATEGORIAS_SAIDA = ['Aluguel/Manutenção','Contas (água/luz/internet)','Missões','Ação Social','Material/Eventos','Folha/Ajuda de Custo','Outros'];
+
+function abrirModalCulto(id){
+  const c = id ? db.cultos.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${c?'Editar':'Novo'} Culto</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Nome do Culto</label><input type="text" id="cultoNome" placeholder="Ex: Culto de Celebração" value="${c?esc(c.nome):''}"></div>
+    <div class="field"><label>Horário</label><input type="time" id="cultoHorario" value="${c?c.horario||'':''}"></div>
+    <small class="muted">Cultos com o mesmo nome mas horários diferentes (ex: 9h e 18h) devem ser cadastrados separadamente, para que a arrecadação de cada um seja somada à parte.</small>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${c?`<button class="btn danger" onclick="excluirCulto('${c.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarCulto(${c?`'${c.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarCulto(id){
+  const nome = document.getElementById('cultoNome').value.trim();
+  if(!nome) return alert('Informe o nome do culto.');
+  const dados = { nome, horario: document.getElementById('cultoHorario').value };
+  if(id){ Object.assign(db.cultos.find(x=>x.id===id), dados); }
+  else{ db.cultos.push(Object.assign({ id: uid('culto') }, dados)); }
+  save(); closeModal();
+}
+function excluirCulto(id){
+  if(confirm('Excluir este culto? Os lançamentos financeiros já vinculados a ele ficarão sem culto associado.')){
+    db.financeiro.forEach(f => { if(f.cultoId === id) f.cultoId = ''; });
+    db.cultos = db.cultos.filter(x => x.id !== id);
+    save(); closeModal();
+  }
+}
+function rotuloCulto(c){ return c.horario ? `${c.nome} — ${c.horario}` : c.nome; }
+function renderCultos(){
+  const el = document.getElementById('listaCultos');
+  if(el){
+    const cultosOrdenados = db.cultos.slice().sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR') || (a.horario||'').localeCompare(b.horario||''));
+    el.innerHTML = cultosOrdenados.length ? cultosOrdenados.map(c => `
+      <div class="between" style="padding:8px 0;border-bottom:1px solid var(--line)">
+        <b>⛪ ${esc(rotuloCulto(c))}</b>
+        <button class="btn" style="font-size:11px" onclick="abrirModalCulto('${c.id}')">✏️ Editar</button>
+      </div>`).join('') : '<p class="muted">Nenhum culto cadastrado ainda. Cadastre os cultos fixos da igreja com o horário (ex: Culto de Celebração — 09:00, Culto de Celebração — 18:00) para acompanhar a arrecadação de cada um separadamente.</p>';
+  }
+
+  const resumoEl = document.getElementById('resumoCultos');
+  if(resumoEl){
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    const mesKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+    const anoKey = `${hoje.getFullYear()}`;
+    const hojeKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+
+    function somaCulto(cultoId, filtro){
+      return db.financeiro.filter(f => f.tipo === 'entrada' && f.cultoId === cultoId && f.data && filtro(f.data)).reduce((a,f)=>a+Number(f.valor||0),0);
+    }
+    resumoEl.innerHTML = db.cultos.length ? `<table><tr><th>Culto</th><th>Hoje</th><th>Esta Semana</th><th>Este Mês</th><th>Este Ano</th></tr>` +
+      db.cultos.map(c => {
+        const dHoje = somaCulto(c.id, d => d === hojeKey);
+        const dSemana = somaCulto(c.id, d => new Date(d+'T12:00:00') >= inicioSemana);
+        const dMes = somaCulto(c.id, d => d.startsWith(mesKey));
+        const dAno = somaCulto(c.id, d => d.startsWith(anoKey));
+        return `<tr><td><b>${esc(rotuloCulto(c))}</b></td><td>${fmtMoeda(dHoje)}</td><td>${fmtMoeda(dSemana)}</td><td>${fmtMoeda(dMes)}</td><td>${fmtMoeda(dAno)}</td></tr>`;
+      }).join('') + `</table>` : '<p class="muted">Cadastre cultos acima para ver aqui o resumo de arrecadação por dia, semana, mês e ano.</p>';
+  }
+}
+
+function abrirModalFinanceiro(tipo, id){
+  const f = id ? db.financeiro.find(x => x.id === id) : null;
+  const categorias = (f ? f.tipo : tipo) === 'entrada' ? CATEGORIAS_ENTRADA : CATEGORIAS_SAIDA;
+  openModalHtml(`
+    <div class="between"><h2>${f?'Editar':'Nova'} ${(f?f.tipo:tipo)==='entrada'?'Entrada':'Saída'}</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <input type="hidden" id="finTipo" value="${f?f.tipo:tipo}">
+    <div class="grid2">
+      <div class="field"><label>Categoria</label><select id="finCategoria">${categorias.map(c=>`<option ${f&&f.categoria===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>Valor (R$)</label><input type="number" step="0.01" id="finValor" value="${f?f.valor:''}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Data</label><input type="date" id="finData" value="${f&&f.data?f.data:new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>Forma de Pagamento</label>
+        <select id="finForma">${['Dinheiro','Pix','Cartão','Transferência','Boleto'].map(o=>`<option ${f&&f.formaPagamento===o?'selected':''}>${o}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="field"><label>Culto (opcional)</label><select id="finCulto"><option value="">Não vinculado / Geral</option>${db.cultos.map(c=>`<option value="${c.id}" ${f&&f.cultoId===c.id?'selected':''}>${esc(rotuloCulto(c))}</option>`).join('')}</select></div>
+    <div class="field"><label>Descrição</label><input type="text" id="finDescricao" value="${f?esc(f.descricao||''):''}"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${f?`<button class="btn danger" onclick="excluirFinanceiro('${f.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarFinanceiro(${f?`'${f.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarFinanceiro(id){
+  const valor = parseFloat(document.getElementById('finValor').value);
+  if(!valor || valor <= 0) return alert('Informe um valor válido.');
+  const dados = { tipo: document.getElementById('finTipo').value, categoria: document.getElementById('finCategoria').value, valor,
+    data: document.getElementById('finData').value, formaPagamento: document.getElementById('finForma').value,
+    cultoId: document.getElementById('finCulto').value, descricao: document.getElementById('finDescricao').value.trim() };
+  if(id){ Object.assign(db.financeiro.find(x=>x.id===id), dados); }
+  else{ db.financeiro.push(Object.assign({id: uid('fin')}, dados)); }
+  save(); closeModal();
+}
+function excluirFinanceiro(id){ if(confirm('Excluir este lançamento?')){ db.financeiro = db.financeiro.filter(x=>x.id!==id); save(); closeModal(); } }
+function renderFinanceiro(){
+  const table = document.getElementById('tabelaFinanceiro');
+  if(!table) return;
+  const canView = !currentUser || currentUser.isAdmin || currentUser.canViewFinanceiro;
+  const mesFiltro = document.getElementById('finFiltroMes')?.value || '';
+  const catFiltro = document.getElementById('finFiltroCategoria')?.value || 'all';
+  const cultoFiltro = document.getElementById('finFiltroCulto')?.value || 'all';
+
+  const selCat = document.getElementById('finFiltroCategoria');
+  if(selCat){
+    const atual = selCat.value;
+    selCat.innerHTML = '<option value="all">Todas</option>' + [...CATEGORIAS_ENTRADA, ...CATEGORIAS_SAIDA].filter((v,i,a)=>a.indexOf(v)===i).map(c=>`<option value="${c}">${c}</option>`).join('');
+    selCat.value = atual;
+  }
+  const selCulto = document.getElementById('finFiltroCulto');
+  if(selCulto){
+    const atual = selCulto.value;
+    selCulto.innerHTML = '<option value="all">Todos</option>' + db.cultos.map(c=>`<option value="${c.id}">${esc(rotuloCulto(c))}</option>`).join('');
+    selCulto.value = atual;
+  }
+
+  if(!canView){
+    table.innerHTML = '<tr><td style="text-align:center;padding:30px" class="muted">🔒 Você não tem permissão para ver o financeiro.</td></tr>';
+    ['finEntradasMes','finSaidasMes','finSaldoMes','finSaldoTotal'].forEach(id => document.getElementById(id).textContent = '—');
+    return;
+  }
+
+  let lista = db.financeiro.slice();
+  if(mesFiltro) lista = lista.filter(f => (f.data||'').startsWith(mesFiltro));
+  if(catFiltro !== 'all') lista = lista.filter(f => f.categoria === catFiltro);
+  if(cultoFiltro !== 'all') lista = lista.filter(f => f.cultoId === cultoFiltro);
+  lista.sort((a,b) => new Date(b.data||0) - new Date(a.data||0));
+
+  const header = `<tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Culto</th><th>Forma</th><th>Valor</th><th></th></tr>`;
+  const rows = lista.map(f => {
+    const culto = db.cultos.find(c => c.id === f.cultoId);
+    return `<tr>
+      <td>${fmtData(f.data)}</td>
+      <td><span class="badge ${f.tipo==='entrada'?'b-green':'b-red'}">${f.tipo==='entrada'?'Entrada':'Saída'}</span></td>
+      <td>${esc(f.categoria)}</td><td>${esc(f.descricao||'-')}</td><td>${culto?esc(rotuloCulto(culto)):'-'}</td><td>${esc(f.formaPagamento||'-')}</td>
+      <td style="font-weight:700;color:${f.tipo==='entrada'?'var(--green)':'#b91c1c'}">${f.tipo==='entrada'?'+':'-'} ${fmtMoeda(f.valor)}</td>
+      <td><button class="btn" style="font-size:11px" onclick="abrirModalFinanceiro('${f.tipo}','${f.id}')">✏️</button></td>
+    </tr>`;
+  }).join('');
+  table.innerHTML = header + (rows || '<tr><td colspan="8" style="text-align:center;padding:20px" class="muted">Nenhum lançamento encontrado.</td></tr>');
+
+  const periodoTopo = document.getElementById('finPeriodoTopoSel')?.value || 'mes';
+  const labelTopo = LABELS_PERIODO[periodoTopo];
+  document.getElementById('finEntradasLabel').textContent = `Entradas (${labelTopo})`;
+  document.getElementById('finSaidasLabel').textContent = `Saídas (${labelTopo})`;
+  document.getElementById('finSaldoLabel').textContent = `Saldo (${labelTopo})`;
+  const filtroTopo = predicadoPeriodo(periodoTopo);
+  const doPeriodo = db.financeiro.filter(f => f.data && filtroTopo(f.data));
+  const entradasPeriodo = doPeriodo.filter(f=>f.tipo==='entrada').reduce((a,f)=>a+Number(f.valor||0),0);
+  const saidasPeriodo = doPeriodo.filter(f=>f.tipo==='saida').reduce((a,f)=>a+Number(f.valor||0),0);
+  const totalEntradas = db.financeiro.filter(f=>f.tipo==='entrada').reduce((a,f)=>a+Number(f.valor||0),0);
+  const totalSaidas = db.financeiro.filter(f=>f.tipo==='saida').reduce((a,f)=>a+Number(f.valor||0),0);
+  document.getElementById('finEntradasMes').textContent = fmtMoeda(entradasPeriodo);
+  document.getElementById('finSaidasMes').textContent = fmtMoeda(saidasPeriodo);
+  document.getElementById('finSaldoMes').textContent = fmtMoeda(entradasPeriodo - saidasPeriodo);
+  document.getElementById('finSaldoTotal').textContent = fmtMoeda(totalEntradas - totalSaidas);
+}
+
+// ===================== AGENDA (CALENDÁRIO VISUAL) =====================
+const MESES_NOMES_AGENDA = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+let calendarCurrentDate = new Date();
+function prevMonth(){ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()-1); renderAgenda(); }
+function nextMonth(){ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()+1); renderAgenda(); }
+function goToToday(){ calendarCurrentDate = new Date(); renderAgenda(); }
+
+function abrirModalEvento(id, dataPreset){
+  const e = id ? db.eventos.find(x => x.id === id) : null;
+  const dataInicial = e ? e.data : (dataPreset || new Date().toISOString().slice(0,10));
+  openModalHtml(`
+    <div class="between"><h2>${e?'Editar':'Novo'} Evento</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Título</label><input type="text" id="evTitulo" value="${e?esc(e.titulo):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Data</label><input type="date" id="evData" value="${dataInicial}"></div>
+      <div class="field"><label>Hora</label><input type="time" id="evHora" value="${e?e.hora||'':''}"></div>
+    </div>
+    <div class="field"><label>Local</label><input type="text" id="evLocal" value="${e?esc(e.local||''):''}"></div>
+    <div class="field"><label>Descrição</label><textarea id="evDescricao" rows="2">${e?esc(e.descricao||''):''}</textarea></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${e?`<button class="btn danger" onclick="excluirEvento('${e.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarEvento(${e?`'${e.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarEvento(id){
+  const titulo = document.getElementById('evTitulo').value.trim();
+  if(!titulo) return alert('Informe o título do evento.');
+  const dados = { titulo, data: document.getElementById('evData').value, hora: document.getElementById('evHora').value,
+    local: document.getElementById('evLocal').value.trim(), descricao: document.getElementById('evDescricao').value.trim() };
+  if(id){ Object.assign(db.eventos.find(x=>x.id===id), dados); }
+  else{ db.eventos.push(Object.assign({id: uid('evt')}, dados)); addNotification('evento','Novo Evento na Agenda', `📅 ${titulo} agendado para ${fmtData(dados.data)}.`); }
+  save(); closeModal();
+}
+function excluirEvento(id){ if(confirm('Excluir este evento?')){ db.eventos = db.eventos.filter(x=>x.id!==id); save(); closeModal(); } }
+
+function renderAgenda(){
+  const calEl = document.getElementById('calendar');
+  if(!calEl) return;
+  const year = calendarCurrentDate.getFullYear();
+  const month = calendarCurrentDate.getMonth();
+  const titleEl = document.getElementById('currentMonthYear');
+  if(titleEl) titleEl.textContent = `${MESES_NOMES_AGENDA[month]} de ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const now = new Date();
+  const isCurMonth = (now.getFullYear() === year && now.getMonth() === month);
+
+  let cells = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(x=>`<div class="day dow">${x}</div>`).join('');
+  for(let i=0; i<firstDay; i++) cells += '<div class="day" style="background:#f8fafc;cursor:default"></div>';
+
+  for(let day=1; day<=totalDays; day++){
+    const isToday = isCurMonth && (now.getDate() === day);
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const diaSemanaNome = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][new Date(year, month, day).getDay()];
+
+    const cultosDia = (db.horariosCulto||[]).filter(h => h.repete !== false ? (h.dia === diaSemanaNome || h.dia === 'Todos os Dias') : h.dataUnica === dateStr)
+      .sort((a,b) => (a.horario||'').localeCompare(b.horario||''));
+    const campanhasDia = (db.campanhas||[]).filter(c => c.dataInicio && dateStr >= c.dataInicio && dateStr <= (c.dataFim || c.dataInicio));
+    const eventosDia = db.eventos.filter(e => e.data === dateStr).sort((a,b) => (a.hora||'').localeCompare(b.hora||''));
+
+    const cultoHtml = cultosDia.map(c => `<div class="event-item culto" onclick="event.stopPropagation();abrirModalHorarioCulto('${c.id}')">⛪ ${c.horario?esc(c.horario)+' ':''}${esc(c.nome)}</div>`).join('');
+    const campanhaHtml = campanhasDia.map(c => `<div class="event-item campanha" onclick="event.stopPropagation();abrirModalCampanha('${c.id}')">📣 ${esc(c.nome)}</div>`).join('');
+    const eventHtml = eventosDia.map(e => `<div class="event-item" onclick="event.stopPropagation();abrirModalEvento('${e.id}')">📌 ${e.hora?esc(e.hora)+' ':''}${esc(e.titulo)}</div>`).join('');
+
+    cells += `<div class="day ${isToday?'current-today':''}" onclick="abrirModalEvento(null,'${dateStr}')" title="Clique para agendar um evento neste dia"><b>${day}</b>${cultoHtml}${campanhaHtml}${eventHtml}</div>`;
+  }
+  calEl.innerHTML = cells;
+}
+
+// ===================== BÍBLIA =====================
+const LIVROS_BIBLIA = [
+  {n:'Gênesis',c:'GEN'},{n:'Êxodo',c:'EXO'},{n:'Levítico',c:'LEV'},{n:'Números',c:'NUM'},{n:'Deuteronômio',c:'DEU'},
+  {n:'Josué',c:'JOS'},{n:'Juízes',c:'JDG'},{n:'Rute',c:'RUT'},{n:'1 Samuel',c:'1SA'},{n:'2 Samuel',c:'2SA'},
+  {n:'1 Reis',c:'1KI'},{n:'2 Reis',c:'2KI'},{n:'1 Crônicas',c:'1CH'},{n:'2 Crônicas',c:'2CH'},{n:'Esdras',c:'EZR'},
+  {n:'Neemias',c:'NEH'},{n:'Ester',c:'EST'},{n:'Jó',c:'JOB'},{n:'Salmos',c:'PSA'},{n:'Provérbios',c:'PRO'},
+  {n:'Eclesiastes',c:'ECC'},{n:'Cantares',c:'SNG'},{n:'Isaías',c:'ISA'},{n:'Jeremias',c:'JER'},{n:'Lamentações',c:'LAM'},
+  {n:'Ezequiel',c:'EZK'},{n:'Daniel',c:'DAN'},{n:'Oséias',c:'HOS'},{n:'Joel',c:'JOL'},{n:'Amós',c:'AMO'},
+  {n:'Obadias',c:'OBA'},{n:'Jonas',c:'JON'},{n:'Miquéias',c:'MIC'},{n:'Naum',c:'NAM'},{n:'Habacuque',c:'HAB'},
+  {n:'Sofonias',c:'ZEP'},{n:'Ageu',c:'HAG'},{n:'Zacarias',c:'ZEC'},{n:'Malaquias',c:'MAL'},
+  {n:'Mateus',c:'MAT'},{n:'Marcos',c:'MRK'},{n:'Lucas',c:'LUK'},{n:'João',c:'JHN'},{n:'Atos',c:'ACT'},
+  {n:'Romanos',c:'ROM'},{n:'1 Coríntios',c:'1CO'},{n:'2 Coríntios',c:'2CO'},{n:'Gálatas',c:'GAL'},{n:'Efésios',c:'EPH'},
+  {n:'Filipenses',c:'PHP'},{n:'Colossenses',c:'COL'},{n:'1 Tessalonicenses',c:'1TH'},{n:'2 Tessalonicenses',c:'2TH'},
+  {n:'1 Timóteo',c:'1TI'},{n:'2 Timóteo',c:'2TI'},{n:'Tito',c:'TIT'},{n:'Filemom',c:'PHM'},{n:'Hebreus',c:'HEB'},
+  {n:'Tiago',c:'JAS'},{n:'1 Pedro',c:'1PE'},{n:'2 Pedro',c:'2PE'},{n:'1 João',c:'1JN'},{n:'2 João',c:'2JN'},
+  {n:'3 João',c:'3JN'},{n:'Judas',c:'JUD'},{n:'Apocalipse',c:'REV'}
+];
+const VERSOES_BIBLIA = { ARC: {id:212, abrev:'ARC'}, NTLH: {id:211, abrev:'NTLH'}, NVT: {id:1930, abrev:'NVT'} };
+let bibliaVersaoAtual = 'ARC';
+function selecionarVersaoBiblia(v){
+  bibliaVersaoAtual = v;
+  document.querySelectorAll('.biblia-tab-pill').forEach(el => el.classList.toggle('active', el.dataset.v === v));
+}
+function abrirCapituloBiblia(){
+  const livroCod = document.getElementById('bibliaLivro').value;
+  const cap = parseInt(document.getElementById('bibliaCapitulo').value, 10) || 1;
+  const v = VERSOES_BIBLIA[bibliaVersaoAtual];
+  const url = `https://www.bible.com/pt/bible/${v.id}/${livroCod}.${cap}.${v.abrev}`;
+  window.open(url, '_blank', 'noopener');
+}
+function renderBiblia(){
+  const sel = document.getElementById('bibliaLivro');
+  if(sel && !sel.dataset.populated){
+    sel.innerHTML = LIVROS_BIBLIA.map(l => `<option value="${l.c}">${l.n}</option>`).join('');
+    sel.dataset.populated = '1';
+  }
+}
+
+// ===================== ESBOÇOS E PREGAÇÕES =====================
+function abrirModalSermao(id){
+  const s = id ? db.sermoes.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${s?'Editar':'Novo'} Esboço/Pregação</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="grid2">
+      <div class="field"><label>Tema</label><input type="text" id="sermTema" value="${s?esc(s.tema):''}"></div>
+      <div class="field"><label>Data</label><input type="date" id="sermData" value="${s&&s.data?s.data:new Date().toISOString().slice(0,10)}"></div>
+    </div>
+    <div class="field"><label>Pregador(a)</label><input type="text" id="sermPregador" value="${s?esc(s.pregador||''):''}"></div>
+
+    <div class="field"><label>Mensagem / Esboço</label><textarea id="sermTexto" rows="12">${s?esc(s.texto||''):''}</textarea></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${s?`<button class="btn danger" onclick="excluirSermao('${s.id}')">🗑️ Excluir</button>`:''}
+      ${s?`<button class="btn gray" onclick="imprimirSermao('${s.id}')">🖨️ Imprimir</button>`:''}
+      <button class="btn primary" onclick="salvarSermao(${s?`'${s.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarSermao(id){
+  const tema = document.getElementById('sermTema').value.trim();
+  if(!tema) return alert('Informe o tema da mensagem.');
+  const dados = { tema, data: document.getElementById('sermData').value, pregador: document.getElementById('sermPregador').value.trim(),
+    texto: document.getElementById('sermTexto').value };
+  if(id){ Object.assign(db.sermoes.find(x=>x.id===id), dados); }
+  else{ db.sermoes.push(Object.assign({id: uid('serm')}, dados)); addNotification('sermao','Novo Esboço Cadastrado', `📝 "${tema}" foi salvo.`); }
+  save(); closeModal();
+}
+function excluirSermao(id){ if(confirm('Excluir este esboço/pregação?')){ db.sermoes = db.sermoes.filter(x=>x.id!==id); save(); closeModal(); } }
+function imprimirSermao(id){
+  const s = db.sermoes.find(x => x.id === id);
+  if(!s) return;
+  const win = window.open('', '_blank');
+  if(!win) return alert('Não foi possível abrir a janela de impressão. Verifique se o navegador bloqueou o pop-up.');
+  win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(s.tema)}</title>
+    <style>
+      body{font-family:Georgia,'Times New Roman',serif;padding:48px;color:#111;line-height:1.7;max-width:760px;margin:0 auto}
+      h1{font-size:24px;margin:0 0 4px}
+      .meta{color:#555;font-size:13px;margin-bottom:28px;border-bottom:1px solid #ccc;padding-bottom:14px}
+      .texto{white-space:pre-wrap;font-size:15px}
+      @media print{ body{padding:0} }
+    </style></head><body>
+    <h1>${esc(s.tema)}</h1>
+    <div class="meta">${s.pregador?'Pregador(a): '+esc(s.pregador)+' &nbsp;•&nbsp; ':''}${fmtData(s.data)}</div>
+    <div class="texto">${esc(s.texto||'')}</div>
+    </body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 350);
+}
+function renderSermoes(){
+  const el = document.getElementById('listaSermoes');
+  if(!el) return;
+  const busca = (document.getElementById('sermaoBusca')?.value || '').toLowerCase();
+  let lista = db.sermoes.slice();
+  if(busca) lista = lista.filter(s => s.tema.toLowerCase().includes(busca) || (s.pregador||'').toLowerCase().includes(busca));
+  lista.sort((a,b) => new Date(b.data||0) - new Date(a.data||0));
+  el.innerHTML = lista.length ? lista.map(s => `
+    <div class="card" style="margin-bottom:10px">
+      <div class="between">
+        <div><b>${esc(s.tema)}</b><br><small class="muted">${fmtData(s.data)} ${s.pregador?'• '+esc(s.pregador):''}</small></div>
+        <div class="row">
+          <button class="btn gray" style="font-size:11px" onclick="imprimirSermao('${s.id}')">🖨️ Imprimir</button>
+          <button class="btn" style="font-size:11px" onclick="abrirModalSermao('${s.id}')">✏️ Abrir</button>
+        </div>
+      </div>
+      ${s.texto?`<p style="font-size:13px;margin:8px 0 0;white-space:pre-wrap;max-height:80px;overflow:hidden;color:#475569">${esc(s.texto.slice(0,220))}${s.texto.length>220?'...':''}</p>`:''}
+    </div>`).join('') : '<p class="muted">Nenhum esboço ou pregação cadastrada ainda.</p>';
+}
+
+// ===================== INFORMAÇÕES (Horários de Culto, Campanhas & Links Úteis) =====================
+function abrirModalHorarioCulto(id){
+  const h = id ? db.horariosCulto.find(x => x.id === id) : null;
+  const repete = !h || h.repete !== false;
+  openModalHtml(`
+    <div class="between"><h2>${h?'Editar':'Novo'} Horário de Culto</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Nome do Culto</label><input type="text" id="hNome" placeholder="Ex: Culto de Celebração" value="${h?esc(h.nome):''}"></div>
+    <div class="field">
+      <label><input type="checkbox" id="hRepete" style="width:auto" ${repete?'checked':''} onchange="document.getElementById('hDiaWrap').style.display=this.checked?'block':'none';document.getElementById('hDataUnicaWrap').style.display=this.checked?'none':'block';"> Repete toda semana</label>
+    </div>
+    <div class="grid2">
+      <div id="hDiaWrap" class="field" style="display:${repete?'block':'none'}">
+        <label>Dia da Semana</label>
+        <select id="hDia">${['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Todos os Dias'].map(o=>`<option ${h&&h.dia===o?'selected':''}>${o}</option>`).join('')}</select>
+      </div>
+      <div id="hDataUnicaWrap" class="field" style="display:${repete?'none':'block'}">
+        <label>Data</label>
+        <input type="date" id="hDataUnica" value="${h&&h.dataUnica?h.dataUnica:''}">
+      </div>
+      <div class="field"><label>Horário</label><input type="time" id="hHorario" value="${h?h.horario||'':''}"></div>
+    </div>
+    <div class="field"><label>Local/Observação (opcional)</label><input type="text" id="hLocal" placeholder="Ex: Templo Sede, Salão 2..." value="${h?esc(h.local||''):''}"></div>
+    <small class="muted">Cultos que repetem toda semana (ex: todo domingo, toda quarta) aparecem automaticamente na Agenda em todas as ocorrências. Marque "Todos os Dias" para um culto diário, ou desmarque "Repete" para um culto de data única.</small>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${h?`<button class="btn danger" onclick="excluirHorarioCulto('${h.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarHorarioCulto(${h?`'${h.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarHorarioCulto(id){
+  const nome = document.getElementById('hNome').value.trim();
+  if(!nome) return alert('Informe o nome do culto.');
+  const repete = document.getElementById('hRepete').checked;
+  const dataUnica = document.getElementById('hDataUnica').value;
+  if(!repete && !dataUnica) return alert('Informe a data desse culto de data única, ou marque "Repete toda semana".');
+  const dados = { nome, repete, dia: repete ? document.getElementById('hDia').value : '', dataUnica: repete ? '' : dataUnica,
+    horario: document.getElementById('hHorario').value, local: document.getElementById('hLocal').value.trim() };
+  if(id){ Object.assign(db.horariosCulto.find(x=>x.id===id), dados); }
+  else{ db.horariosCulto.push(Object.assign({id: uid('hor')}, dados)); }
+  save(); closeModal();
+}
+function excluirHorarioCulto(id){ if(confirm('Excluir este horário?')){ db.horariosCulto = db.horariosCulto.filter(x=>x.id!==id); save(); closeModal(); } }
+
+function abrirModalCampanha(id){
+  const c = id ? db.campanhas.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${c?'Editar':'Nova'} Campanha</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Nome da Campanha</label><input type="text" id="campNome" placeholder="Ex: Campanha do Bazar Beneficente" value="${c?esc(c.nome):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Status</label><select id="campStatus">${['Planejada','Em Andamento','Concluída'].map(o=>`<option ${c&&c.status===o?'selected':''}>${o}</option>`).join('')}</select></div>
+      <div class="field"><label>Meta (opcional)</label><input type="text" id="campMeta" placeholder="Ex: R$ 20.000,00" value="${c?esc(c.meta||''):''}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Data de Início</label><input type="date" id="campInicio" value="${c&&c.dataInicio?c.dataInicio:''}"></div>
+      <div class="field"><label>Data de Término (opcional)</label><input type="date" id="campFim" value="${c&&c.dataFim?c.dataFim:''}"></div>
+    </div>
+    <div class="field"><label>Descrição</label><textarea id="campDescricao" rows="2">${c?esc(c.descricao||''):''}</textarea></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${c?`<button class="btn danger" onclick="excluirCampanha('${c.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarCampanha(${c?`'${c.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarCampanha(id){
+  const nome = document.getElementById('campNome').value.trim();
+  if(!nome) return alert('Informe o nome da campanha.');
+  const dados = { nome, status: document.getElementById('campStatus').value, meta: document.getElementById('campMeta').value.trim(),
+    dataInicio: document.getElementById('campInicio').value, dataFim: document.getElementById('campFim').value,
+    descricao: document.getElementById('campDescricao').value.trim() };
+  if(id){ Object.assign(db.campanhas.find(x=>x.id===id), dados); }
+  else{ db.campanhas.push(Object.assign({id: uid('camp')}, dados)); addNotification('campanha','Nova Campanha Cadastrada', `📣 ${nome} foi cadastrada.`); }
+  save(); closeModal();
+}
+function excluirCampanha(id){ if(confirm('Excluir esta campanha?')){ db.campanhas = db.campanhas.filter(x=>x.id!==id); save(); closeModal(); } }
+
+function abrirModalLinkUtil(id){
+  const l = id ? db.linksUteis.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${l?'Editar':'Novo'} Link</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Título</label><input type="text" id="lTitulo" placeholder="Ex: Transmissão ao Vivo (YouTube)" value="${l?esc(l.titulo):''}"></div>
+    <div class="field"><label>URL</label><input type="text" id="lUrl" placeholder="https://..." value="${l?esc(l.url):''}"></div>
+    <div class="field"><label>Descrição (opcional)</label><input type="text" id="lDescricao" value="${l?esc(l.descricao||''):''}"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${l?`<button class="btn danger" onclick="excluirLinkUtil('${l.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarLinkUtil(${l?`'${l.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarLinkUtil(id){
+  const titulo = document.getElementById('lTitulo').value.trim();
+  let url = document.getElementById('lUrl').value.trim();
+  if(!titulo || !url) return alert('Informe o título e a URL do link.');
+  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const dados = { titulo, url, descricao: document.getElementById('lDescricao').value.trim() };
+  if(id){ Object.assign(db.linksUteis.find(x=>x.id===id), dados); }
+  else{ db.linksUteis.push(Object.assign({id: uid('link')}, dados)); }
+  save(); closeModal();
+}
+function excluirLinkUtil(id){ if(confirm('Excluir este link?')){ db.linksUteis = db.linksUteis.filter(x=>x.id!==id); save(); closeModal(); } }
+
+const ORDEM_DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+function renderInformacoes(){
+  const elHorarios = document.getElementById('listaHorariosCulto');
+  const elCampanhas = document.getElementById('listaCampanhas');
+  const elLinks = document.getElementById('listaLinksUteis');
+  if(!elHorarios || !elCampanhas || !elLinks) return;
+
+  const horarios = db.horariosCulto.slice().sort((a,b) => ORDEM_DIAS.indexOf(a.dia) - ORDEM_DIAS.indexOf(b.dia) || (a.horario||'').localeCompare(b.horario||''));
+  elHorarios.innerHTML = horarios.length ? `<table><tr><th>Culto</th><th>Recorrência</th><th>Horário</th><th>Local</th><th></th></tr>` +
+    horarios.map(h => {
+      const recorrencia = h.repete === false ? `Data única: ${fmtData(h.dataUnica)}` : (h.dia === 'Todos os Dias' ? 'Todos os dias' : `Toda(o) ${esc(h.dia)}`);
+      return `<tr>
+      <td><b>${esc(h.nome)}</b></td><td>${recorrencia}</td><td>${h.horario||'-'}</td><td>${esc(h.local||'-')}</td>
+      <td><button class="btn" style="font-size:11px" onclick="abrirModalHorarioCulto('${h.id}')">✏️</button></td>
+    </tr>`;
+    }).join('') + `</table>` : '<p class="muted">Nenhum horário de culto cadastrado ainda.</p>';
+
+  const statusBadge = { 'Planejada':'b-blue', 'Em Andamento':'b-gold', 'Concluída':'b-green' };
+  const campanhas = db.campanhas.slice().sort((a,b) => new Date(b.dataInicio||0) - new Date(a.dataInicio||0));
+  elCampanhas.innerHTML = campanhas.length ? campanhas.map(c => `
+    <div class="between" style="padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start">
+      <div>
+        <b>${esc(c.nome)}</b> <span class="badge ${statusBadge[c.status]||'b-gray'}">${esc(c.status)}</span><br>
+        <small class="muted">${c.dataInicio?fmtData(c.dataInicio):'Sem data definida'}${c.dataFim?' até '+fmtData(c.dataFim):''}${c.meta?' • Meta: '+esc(c.meta):''}</small>
+        ${c.descricao?`<p style="font-size:13px;margin:6px 0 0">${esc(c.descricao)}</p>`:''}
+      </div>
+      <button class="btn" style="font-size:11px" onclick="abrirModalCampanha('${c.id}')">✏️</button>
+    </div>`).join('') : '<p class="muted">Nenhuma campanha cadastrada ainda.</p>';
+
+  elLinks.innerHTML = db.linksUteis.length ? db.linksUteis.map(l => `
+    <div class="between" style="padding:10px 0;border-bottom:1px solid var(--line)">
+      <div>
+        <b>${esc(l.titulo)}</b><br>
+        <a href="${esc(l.url)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue)">${esc(l.url)}</a>
+        ${l.descricao?`<br><small class="muted">${esc(l.descricao)}</small>`:''}
+      </div>
+      <button class="btn" style="font-size:11px" onclick="abrirModalLinkUtil('${l.id}')">✏️</button>
+    </div>`).join('') : '<p class="muted">Nenhum link cadastrado ainda.</p>';
+}
+
+// ===================== ANIVERSARIANTES =====================
+const MESES_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function renderAniversarios(){
+  const sel = document.getElementById('aniversarioMesFiltro');
+  if(sel && !sel.dataset.populated){
+    sel.innerHTML = MESES_NOMES.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+    sel.value = new Date().getMonth();
+    sel.dataset.populated = '1';
+  }
+  const el = document.getElementById('listaAniversariantes');
+  if(!el || !sel) return;
+  const mes = parseInt(sel.value, 10);
+  const lista = db.membros.filter(m => m.nascimento && new Date(m.nascimento + 'T12:00:00').getMonth() === mes)
+    .sort((a,b) => new Date(a.nascimento+'T12:00:00').getDate() - new Date(b.nascimento+'T12:00:00').getDate());
+  el.innerHTML = lista.length ? `<table><tr><th>Dia</th><th>Nome</th><th>Idade</th></tr>` +
+    lista.map(m => {
+      const dt = new Date(m.nascimento + 'T12:00:00');
+      const idade = new Date().getFullYear() - dt.getFullYear();
+      return `<tr><td>${dt.getDate()}</td><td>${esc(m.nome)}</td><td>${idade} anos</td></tr>`;
+    }).join('') + '</table>' : '<p class="muted">Nenhum aniversariante neste mês.</p>';
+
+  // Próximos 7 dias (usado no dashboard)
+  const dashEl = document.getElementById('dashAniversariantesProximos');
+  if(dashEl){
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const proximos = db.membros.filter(m => m.nascimento).map(m => {
+      const nasc = new Date(m.nascimento + 'T12:00:00');
+      let prox = new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate());
+      if(prox < hoje) prox = new Date(hoje.getFullYear()+1, nasc.getMonth(), nasc.getDate());
+      const dias = Math.round((prox - hoje) / 86400000);
+      return { nome: m.nome, dias, dataLabel: prox.toLocaleDateString('pt-BR') };
+    }).filter(x => x.dias <= 7).sort((a,b) => a.dias - b.dias);
+    dashEl.innerHTML = proximos.length ? proximos.map(p => `<div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)"><span>🎂 ${esc(p.nome)}</span><span class="muted">${p.dias===0?'Hoje!':p.dataLabel}</span></div>`).join('') : '<p class="muted">Nenhum aniversariante nos próximos 7 dias.</p>';
+  }
+}
+
+// ===================== USUÁRIOS =====================
+function abrirModalUsuario(id){
+  const u = id ? usersList.find(x => x.id === id) : null;
+  openModalHtml(`
+    <div class="between"><h2>${u?'Editar':'Novo'} Usuário</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Nome</label><input type="text" id="uNome" value="${u?esc(u.nome):''}"></div>
+    <div class="grid2">
+      <div class="field"><label>E-mail (login)</label><input type="text" id="uEmail" value="${u?esc(u.email):''}"></div>
+      <div class="field"><label>Senha</label><input type="text" id="uSenha" value="${u?esc(u.pass):''}"></div>
+    </div>
+    <div class="field"><label>Cargo</label><input type="text" id="uCargo" placeholder="Ex: Secretária, Tesoureiro, Líder..." value="${u?esc(u.cargo||''):''}"></div>
+    <div class="field"><label><input type="checkbox" id="uAdmin" style="width:auto" ${u&&u.isAdmin?'checked':''}> Administrador (acesso total)</label></div>
+    <div class="field"><label><input type="checkbox" id="uFinanceiro" style="width:auto" ${u&&u.canViewFinanceiro?'checked':''}> Pode ver o Financeiro</label></div>
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
+      ${u && usersList.length>1 ?`<button class="btn danger" onclick="excluirUsuario('${u.id}')">🗑️ Excluir</button>`:''}
+      <button class="btn primary" onclick="salvarUsuario(${u?`'${u.id}'`:'null'})">Salvar</button>
+    </div>`);
+}
+function salvarUsuario(id){
+  const nome = document.getElementById('uNome').value.trim();
+  const email = document.getElementById('uEmail').value.trim();
+  const pass = document.getElementById('uSenha').value.trim();
+  if(!nome || !email || !pass) return alert('Preencha nome, e-mail e senha.');
+  const dados = { nome, email, pass, cargo: document.getElementById('uCargo').value.trim(),
+    isAdmin: document.getElementById('uAdmin').checked, canViewFinanceiro: document.getElementById('uFinanceiro').checked,
+    canManageMembros: true, canManageUsuarios: document.getElementById('uAdmin').checked };
+  if(id){ Object.assign(usersList.find(x=>x.id===id), dados); }
+  else{ usersList.push(Object.assign({id: uid('user')}, dados)); }
+  save(); closeModal();
+}
+function excluirUsuario(id){
+  if(currentUser && currentUser.id === id) return alert('Você não pode excluir seu próprio usuário logado.');
+  if(confirm('Excluir este usuário?')){ usersList = usersList.filter(x=>x.id!==id); save(); closeModal(); }
+}
+function renderUsuarios(){
+  const table = document.getElementById('tabelaUsuarios');
+  if(!table) return;
+  table.innerHTML = `<tr><th>Nome</th><th>E-mail</th><th>Cargo</th><th>Permissões</th><th></th></tr>` +
+    usersList.map(u => `<tr>
+      <td><b>${esc(u.nome)}</b></td><td>${esc(u.email)}</td><td>${esc(u.cargo||'-')}</td>
+      <td>${u.isAdmin?'<span class="badge b-purple">Admin</span>':''} ${u.canViewFinanceiro?'<span class="badge b-green">Financeiro</span>':''}</td>
+      <td><button class="btn" style="font-size:11px" onclick="abrirModalUsuario('${u.id}')">✏️</button></td>
+    </tr>`).join('');
+}
+
+// ===================== DASHBOARD =====================
+// ===================== FILTRO DE PERÍODO COMPARTILHADO (Dia/Semana/Mês/Ano) =====================
+const LABELS_PERIODO = { dia: 'Hoje', semana: 'Esta Semana', mes: 'Este Mês', ano: 'Este Ano' };
+function predicadoPeriodo(periodo){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const isoHoje = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+  if(periodo === 'dia') return d => d === isoHoje;
+  if(periodo === 'semana'){
+    const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    return d => d && new Date(d+'T12:00:00') >= inicioSemana;
+  }
+  if(periodo === 'ano'){
+    const anoKey = `${hoje.getFullYear()}`;
+    return d => (d||'').startsWith(anoKey);
+  }
+  const mesKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+  return d => (d||'').startsWith(mesKey);
+}
+
+function renderDashboard(){
+  const kMembros = document.getElementById('kMembrosAtivos');
+  if(!kMembros) return;
+  kMembros.textContent = db.membros.filter(m => m.status === 'Ativo').length;
+
+  const periodo = document.getElementById('dashboardPeriodoSel')?.value || 'mes';
+  const label = LABELS_PERIODO[periodo];
+  document.getElementById('kArrecadacaoLabel').textContent = `Arrecadação (${label})`;
+  document.getElementById('kDespesasLabel').textContent = `Despesas (${label})`;
+  document.getElementById('kSaldoLabel').textContent = `Saldo (${label})`;
+
+  const filtro = predicadoPeriodo(periodo);
+  const canView = !currentUser || currentUser.isAdmin || currentUser.canViewFinanceiro;
+  const doPeriodo = db.financeiro.filter(f => f.data && filtro(f.data));
+  const entradasPeriodo = doPeriodo.filter(f=>f.tipo==='entrada').reduce((a,f)=>a+Number(f.valor||0),0);
+  const saidasPeriodo = doPeriodo.filter(f=>f.tipo==='saida').reduce((a,f)=>a+Number(f.valor||0),0);
+  document.getElementById('kArrecadacaoMes').textContent = canView ? fmtMoeda(entradasPeriodo) : '—';
+  document.getElementById('kDespesasMes').textContent = canView ? fmtMoeda(saidasPeriodo) : '—';
+  document.getElementById('kSaldoMes').textContent = canView ? fmtMoeda(entradasPeriodo - saidasPeriodo) : '—';
+
+  const statusEl = document.getElementById('dashStatusBreakdown');
+  const statusCount = {};
+  db.membros.forEach(m => { statusCount[m.status] = (statusCount[m.status]||0) + 1; });
+  statusEl.innerHTML = Object.keys(statusCount).length ? Object.entries(statusCount).map(([st,ct]) => `
+    <div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)">
+      <span class="pill-status ${statusPillClass(st)}">${esc(st)}</span><b>${ct}</b>
+    </div>`).join('') : '<p class="muted">Nenhum membro cadastrado ainda.</p>';
+}
+
+// ===================== INICIALIZAÇÃO =====================
+initApp();
+</script>
+</body>
+</html>
