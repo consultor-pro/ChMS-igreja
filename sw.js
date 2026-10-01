@@ -4,7 +4,7 @@
 // IMPORTANTE: toda vez que você atualizar o index.html e subir uma nova
 // versão, mude o número abaixo (ex: 'igreja-crm-v2'). Isso força o navegador
 // a baixar a versão nova em vez de continuar usando a cópia antiga salva.
-const CACHE_NAME = 'igreja-crm-v3';
+const CACHE_NAME = 'igreja-crm-v5';
 
 const ARQUIVOS_ESSENCIAIS = [
   './',
