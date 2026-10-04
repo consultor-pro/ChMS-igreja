@@ -275,13 +275,14 @@ document.addEventListener('DOMContentLoaded', function verificarDominio(){
         <input type="date" id="dashDe" onchange="renderDashboard()" style="max-width:150px"> até
         <input type="date" id="dashAte" onchange="renderDashboard()" style="max-width:150px">
       </span>
+      <span id="finDashAviso" style="margin-left:auto;display:inline-flex;align-items:center;gap:8px"></span>
     </div>
   </div>
   <div class="kpis">
     <div class="kpi">👥 <small>Membros Ativos</small><strong id="kMembrosAtivos">0</strong></div>
-    <div class="kpi">💰 <small id="kArrecadacaoLabel">Arrecadação (Este Mês)</small><strong id="kArrecadacaoMes" style="color:var(--green)">R$ 0</strong></div>
-    <div class="kpi">📉 <small id="kDespesasLabel">Despesas (Este Mês)</small><strong id="kDespesasMes" style="color:#b91c1c">R$ 0</strong></div>
-    <div class="kpi">⚖️ <small id="kSaldoLabel">Saldo (Este Mês)</small><strong id="kSaldoMes">R$ 0</strong></div>
+    <div class="kpi" onclick="if(!finLiberado) finPedirSenha('dashboard')">💰 <small id="kArrecadacaoLabel">Arrecadação (Este Mês)</small><strong id="kArrecadacaoMes" style="color:var(--green)">R$ 0</strong></div>
+    <div class="kpi" onclick="if(!finLiberado) finPedirSenha('dashboard')">📉 <small id="kDespesasLabel">Despesas (Este Mês)</small><strong id="kDespesasMes" style="color:#b91c1c">R$ 0</strong></div>
+    <div class="kpi" onclick="if(!finLiberado) finPedirSenha('dashboard')">⚖️ <small id="kSaldoLabel">Saldo (Este Mês)</small><strong id="kSaldoMes">R$ 0</strong></div>
   </div>
 
   <div class="card">
@@ -337,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function verificarDominio(){
       <div class="row">
         <button class="btn green" onclick="abrirModalFinanceiro('entrada')">+ Lançar Entrada</button>
         <button class="btn danger" onclick="abrirModalFinanceiro('saida')">+ Lançar Saída</button>
+        <button class="btn" onclick="finBloquearAgora()" title="Fecha o Financeiro e volta a pedir a senha">🔒 Bloquear</button>
       </div>
     </div>
   </div>
@@ -522,6 +524,12 @@ document.addEventListener('DOMContentLoaded', function verificarDominio(){
     <div id="eloStatusCodigo" style="font-size:12.5px;font-weight:700;margin-bottom:10px"></div>
     <button class="btn primary" onclick="eloGerarMeuCodigo()">Gerar código de recuperação</button>
   </div>
+  <div class="card" style="margin-bottom:16px">
+    <h2 style="margin-top:0">🔒 Senha do Financeiro</h2>
+    <p class="muted" style="font-size:12px">Senha própria, diferente da senha de login, pedida para abrir o Financeiro e para ver os valores no Dashboard. Se alguém esquecer, o administrador cria uma nova aqui usando a própria senha de login.</p>
+    <div id="finStatusSenha" style="font-size:12.5px;font-weight:700;margin-bottom:10px"></div>
+    <button class="btn primary" id="finBotaoSenha" onclick="finAbrirCriarSenha(false)">Criar senha do Financeiro</button>
+  </div>
   <div class="card">
     <h2 style="margin-top:0">🗑️ Zona de Risco</h2>
     <p class="muted" style="font-size:12px">Apaga todos os cadastros deste sistema neste dispositivo. Faça um backup antes.</p>
@@ -642,6 +650,7 @@ function encerrarSessao(motivo){
   localStorage.removeItem(KEY_LOGIN_TS);
   currentUser = null;
   window.__motivoLogin = motivo || '';
+  if (typeof finBloquear === 'function') finBloquear();
 }
 if (currentUser && sessaoExpirada()) encerrarSessao('Por segurança, sua sessão expirou (24h). Entre novamente.');
 // Também confere com o app aberto: a cada minuto e quando a tela volta a ficar visível
@@ -723,6 +732,142 @@ function initSidebarLabels(){
   if(bellIcon) bellIcon.innerHTML = renderIcon('bell', 16);
 }
 
+// ===================== SENHA DO FINANCEIRO =====================
+// O Financeiro e os valores financeiros do Dashboard só aparecem depois de digitar uma
+// senha própria (diferente da senha de login). O CRM guarda só o "hash" da senha.
+// Fica liberado enquanto a pessoa está no Financeiro ou no Dashboard; ao ir para
+// qualquer outra aba, sair, ou ficar 10 minutos sem mexer, bloqueia de novo.
+var finLiberado = false;
+var finUltimoUso = 0;
+const FIN_MINUTOS_SEM_USO = 10;
+const FIN_MAX_TENTATIVAS = 5;
+const FIN_ESPERA_MIN = 5;
+const KEY_FIN_TENT = `igreja_crm_fin_tentativas_${EQUIPE_ID}`;
+function finHash(senha){ return eloSha256('igreja-fin|' + unescape(encodeURIComponent(String(senha)))); }
+function finTemSenha(){ return !!(db && db.senhaFinanceiro); }
+function finPaginaAtiva(){ const a = document.querySelector('.page.active'); return a ? a.id : ''; }
+function finBloquear(){
+  finLiberado = false;
+  // nunca deixa a tela do Financeiro aberta sem senha: volta para o Dashboard
+  if (finPaginaAtiva() === 'financeiro') {
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    const dash = document.getElementById('dashboard'); if (dash) dash.classList.add('active');
+    document.querySelectorAll('.nav button, .mobile-nav button').forEach(x => x.classList.remove('active'));
+    const b = document.querySelector('.nav button'); if (b) b.classList.add('active');
+    const t = document.getElementById('pageTitle'); if (t) t.textContent = 'Dashboard';
+  }
+}
+function finBloquearAgora(){ finBloquear(); renderAll(); eloToast('🔒 Financeiro bloqueado.'); }
+function finEspera(){
+  try { const t = JSON.parse(localStorage.getItem(KEY_FIN_TENT) || '{}'); return (t.ate && t.ate > Date.now()) ? Math.ceil((t.ate - Date.now()) / 60000) : 0; } catch(e){ return 0; }
+}
+function finRegistrarErro(){
+  let t = {}; try { t = JSON.parse(localStorage.getItem(KEY_FIN_TENT) || '{}'); } catch(e){}
+  t.n = (t.n || 0) + 1;
+  if (t.n >= FIN_MAX_TENTATIVAS) { t = { n: 0, ate: Date.now() + FIN_ESPERA_MIN * 60000 }; }
+  localStorage.setItem(KEY_FIN_TENT, JSON.stringify(t));
+  return t;
+}
+// Abre o pedido de senha. "destino" = 'financeiro' (abre a aba) ou 'dashboard' (só mostra os valores)
+function finPedirSenha(destino){
+  window.__finDestino = destino || 'dashboard';
+  if (!currentUser) return;
+  if (!finTemSenha()) {
+    if (!currentUser.isAdmin) { alert('A senha do Financeiro ainda não foi criada. Peça ao administrador para criar em Configurações.'); return; }
+    return finAbrirCriarSenha(true);
+  }
+  const espera = finEspera();
+  openModalHtml(`
+    <div class="between"><h2>🔒 Senha do Financeiro</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <p class="muted" style="font-size:13px;margin:6px 0 12px">Os dados financeiros são protegidos por uma senha própria.</p>
+    ${espera ? `<p style="color:#b91c1c;font-weight:700;font-size:13px">Muitas tentativas erradas. Aguarde ${espera} minuto(s) para tentar de novo.</p>` : `
+    <div class="field"><label>Senha</label><input type="password" id="finSenhaInput" autocomplete="off" onkeydown="if(event.key==='Enter') finConfirmarSenha()"></div>
+    <div id="finSenhaErro" style="display:none;color:#b91c1c;font-size:12.5px;font-weight:700;margin-bottom:10px"></div>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <small class="muted">Esqueceu? O administrador troca em Configurações.</small>
+      <button class="btn primary" onclick="finConfirmarSenha()">Entrar</button>
+    </div>`}`);
+  setTimeout(() => document.getElementById('finSenhaInput')?.focus(), 50);
+}
+function finConfirmarSenha(){
+  if (finEspera()) return finPedirSenha(window.__finDestino);
+  const v = document.getElementById('finSenhaInput')?.value || '';
+  if (!v) return;
+  if (finHash(v) !== db.senhaFinanceiro) {
+    const t = finRegistrarErro();
+    if (t.ate) return finPedirSenha(window.__finDestino);
+    const erro = document.getElementById('finSenhaErro');
+    if (erro) { erro.style.display = 'block'; erro.textContent = `Senha incorreta. Restam ${FIN_MAX_TENTATIVAS - t.n} tentativa(s).`; }
+    const inp = document.getElementById('finSenhaInput'); if (inp) { inp.value = ''; inp.focus(); }
+    return;
+  }
+  localStorage.removeItem(KEY_FIN_TENT);
+  finLiberar();
+}
+function finLiberar(){
+  finLiberado = true; finUltimoUso = Date.now();
+  closeModal();
+  if (window.__finDestino === 'financeiro') {
+    const b = document.querySelector(".nav button[onclick*=\"'financeiro'\"]");
+    show('financeiro', b);
+  } else renderAll();
+}
+// Criar (1ª vez) ou trocar a senha. Para trocar: a senha atual do Financeiro, ou — só o
+// administrador — a própria senha de login (é o caminho de quem esqueceu).
+function finAbrirCriarSenha(primeiraVez){
+  if (!currentUser) return;
+  const tem = finTemSenha();
+  if (!tem && !currentUser.isAdmin) return alert('Só o administrador pode criar a senha do Financeiro.');
+  openModalHtml(`
+    <div class="between"><h2>🔒 ${tem ? 'Trocar' : 'Criar'} senha do Financeiro</h2><button class="btn" onclick="closeModal()">✕</button></div>
+    <p class="muted" style="font-size:13px;margin:6px 0 12px">${tem ? 'Informe a senha atual do Financeiro' + (currentUser.isAdmin ? ' ou, se esqueceu, a sua senha de login de administrador.' : '.') : 'Esta senha será pedida para abrir o Financeiro e para ver os valores no Dashboard. Use uma senha diferente da senha de login.'}</p>
+    ${tem ? `<div class="field"><label>Senha atual do Financeiro${currentUser.isAdmin ? ' (ou sua senha de login)' : ''}</label><input type="password" id="finSenhaAtual" autocomplete="off"></div>` : ''}
+    <div class="field"><label>Nova senha (mínimo 4 caracteres)</label><input type="password" id="finSenhaNova" autocomplete="new-password"></div>
+    <div class="field"><label>Repita a nova senha</label><input type="password" id="finSenhaNova2" autocomplete="new-password" onkeydown="if(event.key==='Enter') finSalvarSenha(${primeiraVez ? 'true' : 'false'})"></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" onclick="finSalvarSenha(${primeiraVez ? 'true' : 'false'})">Salvar senha</button></div>`);
+}
+function finSalvarSenha(abrirDepois){
+  const nova = document.getElementById('finSenhaNova')?.value || '';
+  const nova2 = document.getElementById('finSenhaNova2')?.value || '';
+  if (finTemSenha()) {
+    const atual = document.getElementById('finSenhaAtual')?.value || '';
+    const okFin = finHash(atual) === db.senhaFinanceiro;
+    const okAdmin = currentUser.isAdmin && atual && atual === currentUser.pass;
+    if (!okFin && !okAdmin) return alert('A senha atual não confere.');
+  } else if (!currentUser.isAdmin) return;
+  if (nova.length < 4) return alert('A nova senha precisa ter pelo menos 4 caracteres.');
+  if (nova !== nova2) return alert('As duas senhas novas não são iguais.');
+  if (nova === currentUser.pass) return alert('Use uma senha diferente da sua senha de login.');
+  db.senhaFinanceiro = finHash(nova);
+  localStorage.removeItem(KEY_FIN_TENT);
+  if (abrirDepois) { finLiberado = true; finUltimoUso = Date.now(); }
+  save(); closeModal();
+  eloToast('🔒 Senha do Financeiro salva.');
+  if (abrirDepois && window.__finDestino === 'financeiro') {
+    const b = document.querySelector(".nav button[onclick*=\"'financeiro'\"]");
+    show('financeiro', b);
+  }
+}
+function finAtualizarTelas(){
+  const st = document.getElementById('finStatusSenha');
+  if (st) st.textContent = finTemSenha() ? '✅ Senha criada. O Financeiro e os valores do Dashboard estão protegidos.' : '⚠️ Senha ainda não criada.';
+  const bt = document.getElementById('finBotaoSenha');
+  if (bt) bt.textContent = finTemSenha() ? 'Trocar senha do Financeiro' : 'Criar senha do Financeiro';
+  const aviso = document.getElementById('finDashAviso');
+  if (aviso) {
+    const podeVer = !currentUser || currentUser.isAdmin || currentUser.canViewFinanceiro;
+    aviso.innerHTML = !podeVer ? '' : (finLiberado
+      ? '<button class="btn" style="font-size:12px" onclick="finBloquearAgora()">🔒 Bloquear valores</button>'
+      : '<small class="muted">🔒 Valores financeiros protegidos</small> <button class="btn" style="font-size:12px" onclick="finPedirSenha(\'dashboard\')">Mostrar valores</button>');
+  }
+}
+// bloqueio automático por tempo sem uso
+document.addEventListener('click', () => { if (finLiberado) finUltimoUso = Date.now(); }, true);
+document.addEventListener('keydown', () => { if (finLiberado) finUltimoUso = Date.now(); }, true);
+setInterval(() => {
+  if (finLiberado && Date.now() - finUltimoUso > FIN_MINUTOS_SEM_USO * 60000) { finBloquear(); closeModal(); renderAll(); eloToast('🔒 Financeiro bloqueado por tempo sem uso.'); }
+}, 20000);
+
 // ===================== AUTENTICAÇÃO =====================
 function handleAuth(){
   const emailEl = document.getElementById('authEmail');
@@ -739,6 +884,7 @@ function handleAuth(){
   localStorage.setItem(`igreja_crm_active_user_${EQUIPE_ID}`, JSON.stringify(currentUser));
   localStorage.setItem(KEY_LOGIN_TS, String(Date.now()));
   window.__motivoLogin = '';
+  finBloquear();
   document.getElementById('authScreen').style.display = 'none';
   initApp();
   if (!currentUser.recoveryHash) setTimeout(() => eloToast('🛟 Gere seu código de recuperação de senha em Configurações.'), 1500);
@@ -747,6 +893,7 @@ function logout(){
   localStorage.removeItem(`igreja_crm_active_user_${EQUIPE_ID}`);
   localStorage.removeItem(KEY_LOGIN_TS);
   currentUser = null;
+  finBloquear();
   initApp();
 }
 function abrirModalMeuPerfil(){
@@ -946,6 +1093,8 @@ const PAGE_TITLES = {
   usuarios:'Usuários & Permissões', configuracoes:'Configurações'
 };
 function show(id, btn){
+  if (id === 'financeiro' && !finLiberado) { finPedirSenha('financeiro'); return; }
+  if (id !== 'financeiro' && id !== 'dashboard') finLiberado = false;
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   const target = document.getElementById(id);
   if(target) target.classList.add('active');
@@ -2346,9 +2495,11 @@ function renderDashboard(){
   const doPeriodo = db.financeiro.filter(f => f.data && filtro(f.data));
   const entradasPeriodo = doPeriodo.filter(f=>f.tipo==='entrada').reduce((a,f)=>a+Number(f.valor||0),0);
   const saidasPeriodo = doPeriodo.filter(f=>f.tipo==='saida').reduce((a,f)=>a+Number(f.valor||0),0);
-  document.getElementById('kArrecadacaoMes').textContent = canView ? fmtMoeda(entradasPeriodo) : '—';
-  document.getElementById('kDespesasMes').textContent = canView ? fmtMoeda(saidasPeriodo) : '—';
-  document.getElementById('kSaldoMes').textContent = canView ? fmtMoeda(entradasPeriodo - saidasPeriodo) : '—';
+  const mostra = v => !canView ? '—' : (finLiberado ? fmtMoeda(v) : '🔒');
+  document.getElementById('kArrecadacaoMes').textContent = mostra(entradasPeriodo);
+  document.getElementById('kDespesasMes').textContent = mostra(saidasPeriodo);
+  document.getElementById('kSaldoMes').textContent = mostra(entradasPeriodo - saidasPeriodo);
+  finAtualizarTelas();
 
   const statusEl = document.getElementById('dashStatusBreakdown');
   const statusCount = {};
